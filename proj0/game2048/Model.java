@@ -93,7 +93,33 @@ public class Model extends Observable {
         checkGameOver();
         setChanged();
     }
-
+    public int cm(int rtop,int i,int j)
+    {
+        Tile top = board.tile(i,rtop);
+        if (board.tile(i,j)==top)
+        {
+            return 0;
+        }
+        Tile t1 = board.tile(i,j);
+        if (top==null)
+        {
+            board.move(i, rtop, t1);
+            return 1;
+        }
+        else
+        {
+            if (top.value() == t1.value())
+            {
+                board.move(i, rtop,t1);
+                score+=t1.value()*2;
+                return 2;
+            }
+            else
+            {
+                return cm(rtop-1,i,j);
+            }
+        }
+    }
     /** Tilt the board toward SIDE. Return true iff this changes the board.
      *
      * 1. If two Tile objects are adjacent in the direction of motion and have
@@ -109,7 +135,37 @@ public class Model extends Observable {
     public boolean tilt(Side side) {
         boolean changed;
         changed = false;
-
+        board.setViewingPerspective(side);
+        for (int i=board.size() - 1; i >= 0; i--) {
+            int rtop= board.size()-1;
+            for (int j=board.size() - 2; j >= 0; j--) {
+                if (board.tile(i,j)!=null)
+                {
+                    int tc=0;
+                    tc=cm(rtop,i,j);
+                    //2代表完成了merge
+                    if (tc==2)
+                    {
+                        changed=true;
+                        rtop=rtop-1;
+                    }
+                    //1代表完成了对null的占领
+                    else if (tc==1)
+                    {
+                        changed=true;
+                        if(board.tile(i,rtop-1)!=null)
+                        {
+                            rtop=rtop-1;
+                        }
+                    }
+                    else
+                    {
+                        rtop-=1;
+                    }
+                }
+            }
+        }
+        board.setViewingPerspective(Side.NORTH);
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
