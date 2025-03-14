@@ -3,6 +3,8 @@ package timingtest;
 /** An SLList is a list of integers, which hides the terrible truth
  * of the nakedness within. */
 public class SLList<Item> {
+	public SLList<Item> next;
+
 	private class IntNode {
 		public Item item;
 		public IntNode next;
@@ -71,7 +73,11 @@ public class SLList<Item> {
 	public int size() {
 		return size;
 	}
-
+	public void go()
+	{
+		this.sentinel = sentinel.next;
+		return ;
+	}
 	public static void main(String[] args) {
 		/* Creates a list of one integer, namely 10 */
 		SLList L = new SLList();
