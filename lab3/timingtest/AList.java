@@ -29,6 +29,7 @@ public class AList<Item> {
         Item[] a = (Item[]) new Object[capacity];
         System.arraycopy(items, 0, a, 0, size);
         items = a;
+        return;
     }
 
     /** Inserts X into the back of the list. */

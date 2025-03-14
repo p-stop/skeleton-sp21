@@ -29,7 +29,7 @@ public class TimeAList {
         AList<Integer> test=new AList<>();
         int j=1;
         Stopwatch check=new Stopwatch();
-        for(int i=0;i<16384000;i++) {
+        for(int i=0;i<128000;i++) {
             test.addLast(1);
             if(i==((1<<j)*1000)-1)
             {

@@ -136,4 +136,16 @@ public class LinkedListDequeTest {
 
         */
     }
+    @Test
+    public void btest_node_add_empty_size() {
+        LinkedListDeque <Integer> deque = new LinkedListDeque();
+        for (int i = 5; i < 10; i++) {
+            deque.addLast(i);
+        }
+        for (int i = 5; i > 0; i--) {
+            deque.addFirst(i);
+        }
+        assertEquals(deque.size(), 9);
+
+    }
 }
