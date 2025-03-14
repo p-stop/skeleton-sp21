@@ -30,7 +30,7 @@ public class TimeSLList {
         SLList <Double> times=new SLList<>();
         SLList<Integer> opCounts=new SLList<>();
         SLList<Integer>list = new SLList();
-        int num=32000;
+        int num=40000;
         for (int i = 0; i < num; i++) {
             list.addLast(i);
         }
