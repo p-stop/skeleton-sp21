@@ -1,6 +1,12 @@
 package deque;
+import java.util.Iterator;
 
-public class LinkedListDeque<witem> {
+import static edu.princeton.cs.algs4.StdOut.print;
+
+public class LinkedListDeque<witem> implements Iterable<witem> {
+
+    //node and init
+
     private class Node {
         witem data;
         Node next;
@@ -14,16 +20,45 @@ public class LinkedListDeque<witem> {
     private Node heail;
     private int size;
     public LinkedListDeque() {
-        heail = new Node(null, heail, heail);
+        heail = new Node(null, null, null);
+        heail.next = heail.prev = heail;
         size = 0;
     }
+
+
+    //iterator implement
+
+    public class Listiterator<witem> implements Iterator<witem> {
+
+        private Node current;
+        public Listiterator() {
+            current = heail.next;
+        }
+        @Override
+        public boolean hasNext() {
+            return current != heail;
+        }
+
+        @Override
+        public witem next() {
+            witem cur_data= (witem) current.data;
+            current=current.next;
+            return cur_data;
+        }
+    }
+    public Listiterator<witem> iterator(){
+        return new Listiterator<>();
+    }
+
     public void addFirst(witem d) {
         Node newNode = new Node(d, heail.next, heail);
         heail.next = newNode;
         newNode.next.prev = newNode;
+        size++;
         return;
     }
     public witem removeFirst(){
+        if (size == 0) return null;
         witem data = heail.next.data;
         heail.next=heail.next.next;
         heail.next.prev=heail;
@@ -33,22 +68,101 @@ public class LinkedListDeque<witem> {
     public void addLast(witem d) {
         Node newNode = new Node(d, heail, heail.prev);
         newNode.prev.next = newNode;
-        newNode.prev.prev = newNode;
+        newNode.next.prev = newNode;
+        size++;
         return;
     }
+    public witem removeLast(){
+        if (size == 0) return null;
+        witem data = heail.prev.data;
+        heail.prev.prev.next = heail;
+        heail.prev=heail.prev.prev;
+        size--;
+        return data;
+    }
+
+    //about size
+
     public boolean isEmpty(){
         return size == 0;
     }
     public int size(){
         return size;
     }
-    public void print(){
+
+    //about output
+
+    @Override
+    public String toString() {
+        Listiterator iter = (Listiterator) iterator();
+        StringBuilder base=new StringBuilder();
+        base.append("[");
+        for(witem i:this)
+        {
+            base.append(i.toString());
+            base.append(" ");
+        }
+        base.append("]");
+        return base.toString();
+    }
+
+    public witem get(int index){
+        if(index+1>size())return null;//判断是否超出索引范围
+        Listiterator iter =  iterator();
+        while(iter.hasNext() && (index>0)) {
+            iter.next();
+            index--;
+        }
+        return (witem) iter.next();
+    }
+    public witem getRecursive(int index){
+        return recursive(index,heail.next);
+    }
+
+    public void printDeque(){
         Node current = heail.next;
         while(current.data != null){
             System.out.print(current.data + " ");
+            current = current.next;
         }
         System.out.println();
         return;
     }
+    public static void main(String[] args) {
+        LinkedListDeque <Integer> deque = new LinkedListDeque();
+        for (int i = 5; i < 10; i++) {
+            deque.addLast(i);
+        }
+        for (int i = 4; i > 0; i--) {
+            deque.addFirst(i);
+        }
+        System.out.println(deque);
+    }
+    //none
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof LinkedListDeque ohther){
+            if(ohther.size() != size){
+                return false;
+            }
+            Listiterator oitr = ohther.iterator();
+            Listiterator titr=this.iterator();
+            while(titr.hasNext()){
+                if(!(oitr.next().equals(titr.next()))) return false;
+                titr.next();
+                oitr.next();
+            }
+            return true;
+        }
+        return false;
+    }
+    //helper method
+    private witem recursive(int index,Node cur){
+        if(cur==heail && index==0) return null;//防止索引超范围
+        if (index == 0) return cur.data;
+        cur = cur.next;
+        return recursive(index-1, cur);
+    }
+
 
 }
