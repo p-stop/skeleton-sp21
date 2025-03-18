@@ -3,9 +3,9 @@ package deque;
 import java.util.Iterator;
 
 
-public class LinkedListDeque<witem> implements Iterable<witem> {
+public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
 
-    //node and init
+    //node
 
     private class Node {
         witem data;
@@ -17,19 +17,26 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
             prev = p;
         }
     }
+
     private Node heail;
+
     private int size;
+
+    //construct
+
     public LinkedListDeque() {
         heail = new Node(null, null, null);
         heail.next = heail.prev = heail;
         size = 0;
     }
+
     public LinkedListDeque(witem d) {
         heail = new Node(null, null, null);
         Node newnode=new Node(d,heail,heail);
         heail.next = heail.prev = newnode;
         size = 1;
     }
+
     public LinkedListDeque(witem []arry) {
         heail = new Node(null,null,null);
         heail.next = heail.prev = heail;
@@ -38,7 +45,6 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
             this.addLast(d);
         }
     }
-
 
     //iterator implement
 
@@ -60,10 +66,14 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
             return cur_data;
         }
     }
+
     public Listiterator<witem> iterator(){
         return new Listiterator<witem>();
     }
 
+    //base
+
+    @Override
     public void addFirst(witem d) {
         Node newNode = new Node(d, heail.next, heail);
         heail.next = newNode;
@@ -71,6 +81,7 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         size++;
         return;
     }
+
     public witem removeFirst(){
         if (size == 0) return null;
         witem data = heail.next.data;
@@ -79,6 +90,8 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         size--;
         return data;
     }
+
+    @Override
     public void addLast(witem d) {
         Node newNode = new Node(d, heail, heail.prev);
         newNode.prev.next = newNode;
@@ -86,6 +99,7 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         size++;
         return;
     }
+
     public witem removeLast(){
         if (size == 0) return null;
         witem data = heail.prev.data;
@@ -97,9 +111,7 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
 
     //about size
 
-    public boolean isEmpty(){
-        return size == 0;
-    }
+    @Override
     public int size(){
         return size;
     }
@@ -119,6 +131,7 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         return base.toString();
     }
 
+    @Override
     public witem get(int index){
         if(index+1>size())return null;//判断是否超出索引范围
         Listiterator iter =  iterator();
@@ -128,10 +141,12 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         }
         return (witem) iter.next();
     }
+
     public witem getRecursive(int index){
         return recursive(index,heail.next);
     }
 
+    @Override
     public void printDeque(){
         Node current = heail.next;
         while(current.data != null){
@@ -141,18 +156,9 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         System.out.println();
         return;
     }
-    public static void main(String[] args) {
-        LinkedListDeque <Integer> deque = new LinkedListDeque();
-        for (int i = 5; i < 10; i++) {
-            deque.addLast(i);
-        }
-        for (int i = 4; i > 0; i--) {
-            deque.addFirst(i);
-        }
-        System.out.println(deque);
-        return;
-    }
-    //none
+
+    //compare
+
     @Override
     public boolean equals(Object o){
         if(o instanceof LinkedListDeque){
@@ -172,13 +178,13 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         }
         return false;
     }
+
     //helper method
+
     private witem recursive(int index,Node cur){
         if(cur==heail && index==0) return null;//防止索引超范围
         if (index == 0) return cur.data;
         cur = cur.next;
         return recursive(index-1, cur);
     }
-
-
 }

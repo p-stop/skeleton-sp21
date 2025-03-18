@@ -2,18 +2,27 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<witem> implements Iterable<witem> {
+public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
+
     private witem[] arry;
+
     private int size;
+
+    //construct
+
     public ArrayDeque(witem d) {
         arry = (witem[]) new Object[8];
         arry[0] = d;
         size = 1;
     }
+
     public ArrayDeque() {
         arry = (witem[]) new Object[8];
         size = 0;
     }
+
+    //iterator
+
     public class ArrayDequeIterator implements Iterator<witem> {
         private int pos = 0;
         public ArrayDequeIterator() {
@@ -28,12 +37,14 @@ public class ArrayDeque<witem> implements Iterable<witem> {
             return arry[pos++];
         }
     }
+
     @Override
     public Iterator<witem> iterator() {
         return new ArrayDequeIterator();
     }
 
     //base do
+
     public void resize(int newSize,boolean first,boolean delate) {
         witem[] newarry = (witem[]) new Object[newSize];
         int pos = 0;
@@ -52,6 +63,8 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         arry = newarry;
         return ;
     }
+
+    @Override
     public void addFirst(witem d) {
         if(size >= arry.length) {
             resize(arry.length*2,true,false);
@@ -64,6 +77,8 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         size++;
         return ;
     }
+
+    @Override
     public void addLast(witem d) {
         if(size >= arry.length) {
             resize(arry.length*2,false,false);
@@ -72,6 +87,7 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         size++;
         return ;
     }
+
     public witem removeFirst() {
         if(size == 0) {
             return null;
@@ -86,6 +102,7 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         }
         return lost;
     }
+
     public witem removeLast() {
         if(size == 0) {
             return null;
@@ -103,9 +120,7 @@ public class ArrayDeque<witem> implements Iterable<witem> {
 
     //about size
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
+    @Override
     public int size() {
         return size;
     }
@@ -125,18 +140,22 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         base.append("]");
         return base.toString();
     }
+
+    @Override
     public witem get(int index) {
         if(index < 0 || index >= size){
             return null;
         }
         return arry[index];
     }
+
+    @Override
     public void printDeque() {
         System.out.println(arry);
         return ;
     }
 
-    //
+    //compare
 
     public boolean equals(Object o) {
         if(o instanceof ArrayDeque) {
