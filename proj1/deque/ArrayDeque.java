@@ -93,7 +93,6 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         witem lost = arry[size-1];
         size--;
         if(if_resize()){
-            size++;
             resize(arry.length/2,false,true);
         }
         else {
