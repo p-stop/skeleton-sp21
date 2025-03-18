@@ -1,7 +1,7 @@
 package deque;
+
 import java.util.Iterator;
 
-import static edu.princeton.cs.algs4.StdOut.print;
 
 public class LinkedListDeque<witem> implements Iterable<witem> {
 
@@ -155,7 +155,8 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
     //none
     @Override
     public boolean equals(Object o){
-        if(o instanceof LinkedListDeque ohther){
+        if(o instanceof LinkedListDeque){
+            LinkedListDeque <witem> ohther = (LinkedListDeque) o;
             if(ohther.size() != size){
                 return false;
             }

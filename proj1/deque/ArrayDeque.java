@@ -139,7 +139,8 @@ public class ArrayDeque<witem> implements Iterable<witem> {
     //
 
     public boolean equals(Object o) {
-        if(o instanceof ArrayDeque otherarry) {
+        if(o instanceof ArrayDeque) {
+            ArrayDeque otherarry = (ArrayDeque) o;
             if(otherarry.size != size){
                 return false;
             }
