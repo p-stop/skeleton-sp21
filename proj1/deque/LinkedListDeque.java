@@ -24,6 +24,20 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         heail.next = heail.prev = heail;
         size = 0;
     }
+    public LinkedListDeque(witem d) {
+        heail = new Node(null, null, null);
+        Node newnode=new Node(d,heail,heail);
+        heail.next = heail.prev = newnode;
+        size = 1;
+    }
+    public LinkedListDeque(witem []arry) {
+        heail = new Node(null,null,null);
+        heail.next = heail.prev = heail;
+        size = 0;
+        for(witem d : arry) {
+            this.addLast(d);
+        }
+    }
 
 
     //iterator implement
@@ -47,7 +61,7 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
         }
     }
     public Listiterator<witem> iterator(){
-        return new Listiterator<>();
+        return new Listiterator<witem>();
     }
 
     public void addFirst(witem d) {
@@ -137,6 +151,7 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
             deque.addFirst(i);
         }
         System.out.println(deque);
+        return;
     }
     //none
     @Override
@@ -148,9 +163,10 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
             Listiterator oitr = ohther.iterator();
             Listiterator titr=this.iterator();
             while(titr.hasNext()){
-                if(!(oitr.next().equals(titr.next()))) return false;
-                titr.next();
-                oitr.next();
+                witem t_item=(witem) titr.next();
+                witem o_item=(witem) oitr.next();
+                if(!(t_item.equals(o_item))) return false;
+
             }
             return true;
         }

@@ -1,5 +1,6 @@
 package deque;
 
+import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -190,6 +191,106 @@ public class LinkedListDequeTest {
         assertEquals(expectss, deque.getRecursive(8).toString());
     }
     @Test
-    public void emptyLinkedListTest() {}
+    public void emptyLinkedListTest() {
+        LinkedListDeque<Integer> deque = new LinkedListDeque<>();
+        assertTrue(deque.isEmpty());
+        assertNull(deque.removeFirst());
+        assertNull(deque.removeLast());
+    }
 
+    @Test
+    public void testGetOutOfBounds() {
+        LinkedListDeque<Integer> deque = new LinkedListDeque<>();
+        deque.addFirst(1);
+        assertNull(deque.get(1));
+        assertNull(deque.getRecursive(1));
+    }
+
+    @Test
+    public void testEquals() {
+        LinkedListDeque<Integer> deque1 = new LinkedListDeque<>();
+        LinkedListDeque<Integer> deque2 = new LinkedListDeque<>();
+        assertTrue(deque1.equals(deque2));
+
+        deque1.addFirst(1);
+        deque2.addFirst(1);
+        assertTrue(deque1.equals(deque2));
+
+        deque1.addLast(2);
+        deque2.addLast(2);
+        assertTrue(deque1.equals(deque2));
+
+        deque1.addLast(3);
+        assertFalse(deque1.equals(deque2));
+    }
+
+    @Test
+    public void testIterator() {
+        LinkedListDeque<Integer> deque = new LinkedListDeque<>();
+        for (int i = 0; i < 5; i++) {
+            deque.addLast(i);
+        }
+        int index = 0;
+        for (int item : deque) {
+            assertEquals((int) item, index);
+            index++;
+        }
+    }
+
+    @Test
+    public void testAddRemoveAtBoundary() {
+        LinkedListDeque<Integer> deque = new LinkedListDeque<>();
+        for (int i = 0; i < 10; i++) {
+            deque.addLast(i);
+        }
+        for (int i = 0; i < 10; i++) {
+            assertEquals((Integer) i, deque.removeFirst());
+        }
+        assertTrue(deque.isEmpty());
+    }
+    @Test
+    public void randomOperationsTest() {
+        LinkedListDeque<Integer> deque = new LinkedListDeque<>();
+        Random rand = new Random();
+
+        int operations = 1000;
+        int maxValue = 100;
+        int size = 0;
+
+        for (int i = 0; i < operations; i++) {
+            int operation = rand.nextInt(4);
+            int value = rand.nextInt(maxValue);
+
+            switch (operation) {
+                case 0:
+                    deque.addFirst(value);
+                    size++;
+                    break;
+                case 1:
+                    deque.addLast(value);
+                    size++;
+                    break;
+                case 2:
+                    if (size > 0) {
+                        deque.removeFirst();
+                        size--;
+                    }
+                    break;
+                case 3:
+                    if (size > 0) {
+                        deque.removeLast();
+                        size--;
+                    }
+                    break;
+            }
+
+            assertEquals(size, deque.size());
+
+            if (size == 0) {
+                assertTrue(deque.isEmpty());
+            } else {
+                assertFalse(deque.isEmpty());
+            }
+        }
+    }
 }
