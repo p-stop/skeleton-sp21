@@ -108,7 +108,6 @@ public class LinkedListDeque<witem> implements Iterable<witem> {
 
     @Override
     public String toString() {
-        Listiterator iter = (Listiterator) iterator();
         StringBuilder base=new StringBuilder();
         base.append("[");
         for(witem i:this)

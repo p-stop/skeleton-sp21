@@ -38,19 +38,17 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         witem[] newarry = (witem[]) new Object[newSize];
         int pos = 0;
         int start=0;
-        int re_size = size;
         if(delate) {
             if(first) {
                 start = 1;
             }
-            else {
-                re_size--;
+        }
+        else{
+            if(first) {
+                pos=1;
             }
         }
-        if(first) {
-            pos=1;
-        }
-        System.arraycopy(arry, start, newarry, pos, re_size);
+        System.arraycopy(arry, start, newarry, pos, size);
         arry = newarry;
         return ;
     }
@@ -95,6 +93,7 @@ public class ArrayDeque<witem> implements Iterable<witem> {
         witem lost = arry[size-1];
         size--;
         if(if_resize()){
+            size++;
             resize(arry.length/2,false,true);
         }
         else {
@@ -117,7 +116,15 @@ public class ArrayDeque<witem> implements Iterable<witem> {
 
     @Override
     public String toString() {
-        return arry.toString();
+        StringBuilder base=new StringBuilder();
+        base.append("[");
+        for(witem i:this)
+        {
+            base.append(i.toString());
+            base.append(" ");
+        }
+        base.append("]");
+        return base.toString();
     }
     public witem get(int index) {
         if(index < 0 || index >= size){
