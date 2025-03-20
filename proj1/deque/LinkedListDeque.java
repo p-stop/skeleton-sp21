@@ -36,7 +36,7 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 //        heail.next = heail.prev = newnode;
 //        size = 1;
 //    }
-
+//
 //    public LinkedListDeque(T []arry) {
 //        heail = new Node(null,null,null);
 //        heail.next = heail.prev = heail;
@@ -48,7 +48,7 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
     //iterator implement
 
-    private class Listiterator<T> implements Iterator<T> {
+    public class Listiterator<T> implements Iterator<T> {
 
         private Node current;
         public Listiterator() {
@@ -171,8 +171,24 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
             while(titr.hasNext()){
                 T t_item=(T) titr.next();
                 T o_item=(T) oitr.next();
-                if(!(t_item.equals(o_item))) return false;
+                if(!(t_item.equals(o_item))) {
+                    return false;
+                }
 
+            }
+            return true;
+        }
+        else if(o instanceof ArrayDeque) {
+            ArrayDeque otherarry = (ArrayDeque) o;
+            if(otherarry.size() != size){
+                return false;
+            }
+            Listiterator titr=this.iterator();
+            for(int i=0;i<size;i++){
+                T t_item=(T) titr.next();
+                if(!t_item.equals(otherarry.get(i))){
+                    return false;
+                }
             }
             return true;
         }

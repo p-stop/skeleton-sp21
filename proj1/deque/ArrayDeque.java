@@ -3,18 +3,9 @@ package deque;
 import java.util.Iterator;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
-
     private T[] arry;
 
     private int size;
-
-    //construct
-
-//    public ArrayDeque(T d) {
-//        arry = (T[]) new Object[8];
-//        arry[0] = d;
-//        size = 1;
-//    }
 
     public ArrayDeque() {
         arry = (T[]) new Object[8];
@@ -42,9 +33,6 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
     }
-
-    //base do
-
     private void resize(int newSize,boolean first,boolean delate) {
         T[] newarry = (T[]) new Object[newSize];
         int pos = 0;
@@ -154,13 +142,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         System.out.println(arry);
         return ;
     }
-
-    //compare
-
     public boolean equals(Object o) {
         if(o instanceof ArrayDeque) {
             ArrayDeque otherarry = (ArrayDeque) o;
-            if(otherarry.size != size){
+            if(otherarry.size() != size){
                 return false;
             }
             for(int i=0;i<size;i++){
@@ -170,9 +155,22 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             }
             return true;
         }
+        else if(o instanceof LinkedListDeque){
+            LinkedListDeque <T> ohther = (LinkedListDeque) o;
+            if(ohther.size() != size){
+                return false;
+            }
+            LinkedListDeque.Listiterator oitr = ohther.iterator();
+            for(int i=0;i<size;i++){
+                T o_item=(T) oitr.next();
+                if(!arry[i].equals(o_item)){
+                    return false;
+                }
+            }
+            return true;
+        }
         return false;
     }
-
     //helper
     private boolean if_resize() {
         if(arry.length > size*4){
