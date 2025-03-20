@@ -95,19 +95,19 @@ public class ArrayDequeTest {
         }
     }
 
-    @Test
-    public void btest_node_add_empty_size() {
-        ArrayDeque <Integer> deque = new ArrayDeque();
-        for (int i = 5; i < 10; i++) {
-            deque.addLast(i);
-        }
-        for (int i = 4; i > 0; i--) {
-            deque.addFirst(i);
-        }
-        String expects="[1 2 3 4 5 6 7 8 9 ]";
-        assertEquals(9, deque.size());
-        assertEquals(expects, deque.toString());
-    }
+//    @Test
+//    public void btest_node_add_empty_size() {
+//        ArrayDeque <Integer> deque = new ArrayDeque();
+//        for (int i = 5; i < 10; i++) {
+//            deque.addLast(i);
+//        }
+//        for (int i = 4; i > 0; i--) {
+//            deque.addFirst(i);
+//        }
+//        String expects="[1 2 3 4 5 6 7 8 9 ]";
+//        assertEquals(9, deque.size());
+//        assertEquals(expects, deque.printDeque());
+//    }
 
     @Test
     public void test_get_1st() {

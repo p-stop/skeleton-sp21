@@ -10,11 +10,11 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     //construct
 
-    public ArrayDeque(T d) {
-        arry = (T[]) new Object[8];
-        arry[0] = d;
-        size = 1;
-    }
+//    public ArrayDeque(T d) {
+//        arry = (T[]) new Object[8];
+//        arry[0] = d;
+//        size = 1;
+//    }
 
     public ArrayDeque() {
         arry = (T[]) new Object[8];
@@ -45,7 +45,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     //base do
 
-    public void resize(int newSize,boolean first,boolean delate) {
+    private void resize(int newSize,boolean first,boolean delate) {
         T[] newarry = (T[]) new Object[newSize];
         int pos = 0;
         int start=0;
@@ -128,18 +128,18 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     //about output
 
 
-    @Override
-    public String toString() {
-        StringBuilder base=new StringBuilder();
-        base.append("[");
-        for(T i:this)
-        {
-            base.append(i.toString());
-            base.append(" ");
-        }
-        base.append("]");
-        return base.toString();
-    }
+//    @Override
+//    public String toString() {
+//        StringBuilder base=new StringBuilder();
+//        base.append("[");
+//        for(T i:this)
+//        {
+//            base.append(i.toString());
+//            base.append(" ");
+//        }
+//        base.append("]");
+//        return base.toString();
+//    }
 
     @Override
     public T get(int index) {

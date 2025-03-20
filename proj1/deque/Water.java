@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Comparator;
 
-public class Water implements MyComparable<Water>{
+public class Water implements Comparable<Water>{
 
     private int capacity;
     private String origin;
@@ -11,7 +11,7 @@ public class Water implements MyComparable<Water>{
     public int compareTo(Water item) {
         return this.quality-item.quality;
     }
-    public static class capacitycompare implements MyComparator<Water>{
+    public static class capacitycompare implements Comparator<Water>{
         public  int  compare(Water a, Water b) {
             return -a.capacity+b.capacity;
         }

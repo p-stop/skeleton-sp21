@@ -3,9 +3,9 @@ package deque;
 import java.util.Comparator;
 
 public class MaxArrayDeque<T> extends ArrayDeque<T> { ;
-    private MyComparator<T> arrycomparator;
+    private Comparator<T> arrycomparator;
     T max;
-    public MaxArrayDeque(MyComparator<T> c){
+    public MaxArrayDeque(Comparator<T> c){
         super();
         arrycomparator = c;
         max = null;
@@ -24,7 +24,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> { ;
         }
         return max;
     }
-    public T max(MyComparator<T> c){
+    public T max(Comparator<T> c){
         if(size()==0){
             return null;
         }

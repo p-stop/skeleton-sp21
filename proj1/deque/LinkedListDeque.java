@@ -30,21 +30,21 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
         size = 0;
     }
 
-    public LinkedListDeque(T d) {
-        heail = new Node(null, null, null);
-        Node newnode=new Node(d,heail,heail);
-        heail.next = heail.prev = newnode;
-        size = 1;
-    }
+//    public LinkedListDeque(T d) {
+//        heail = new Node(null, null, null);
+//        Node newnode=new Node(d,heail,heail);
+//        heail.next = heail.prev = newnode;
+//        size = 1;
+//    }
 
-    public LinkedListDeque(T []arry) {
-        heail = new Node(null,null,null);
-        heail.next = heail.prev = heail;
-        size = 0;
-        for(T d : arry) {
-            this.addLast(d);
-        }
-    }
+//    public LinkedListDeque(T []arry) {
+//        heail = new Node(null,null,null);
+//        heail.next = heail.prev = heail;
+//        size = 0;
+//        for(T d : arry) {
+//            this.addLast(d);
+//        }
+//    }
 
     //iterator implement
 
@@ -118,18 +118,18 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
     //about output
 
-    @Override
-    public String toString() {
-        StringBuilder base=new StringBuilder();
-        base.append("[");
-        for(T i:this)
-        {
-            base.append(i.toString());
-            base.append(" ");
-        }
-        base.append("]");
-        return base.toString();
-    }
+//    @Override
+//    public String toString() {
+//        StringBuilder base=new StringBuilder();
+//        base.append("[");
+//        for(T i:this)
+//        {
+//            base.append(i.toString());
+//            base.append(" ");
+//        }
+//        base.append("]");
+//        return base.toString();
+//    }
 
     @Override
     public T get(int index){
