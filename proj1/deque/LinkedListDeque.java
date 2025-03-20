@@ -3,15 +3,15 @@ package deque;
 import java.util.Iterator;
 
 
-public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
+public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
     //node
 
     private class Node {
-        witem data;
+        T data;
         Node next;
         Node prev;
-        public Node(witem d, Node n, Node p) {
+        public Node(T d, Node n, Node p) {
             data = d;
             next = n;
             prev = p;
@@ -30,25 +30,25 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
         size = 0;
     }
 
-    public LinkedListDeque(witem d) {
+    public LinkedListDeque(T d) {
         heail = new Node(null, null, null);
         Node newnode=new Node(d,heail,heail);
         heail.next = heail.prev = newnode;
         size = 1;
     }
 
-    public LinkedListDeque(witem []arry) {
+    public LinkedListDeque(T []arry) {
         heail = new Node(null,null,null);
         heail.next = heail.prev = heail;
         size = 0;
-        for(witem d : arry) {
+        for(T d : arry) {
             this.addLast(d);
         }
     }
 
     //iterator implement
 
-    public class Listiterator<witem> implements Iterator<witem> {
+    private class Listiterator<T> implements Iterator<T> {
 
         private Node current;
         public Listiterator() {
@@ -60,21 +60,21 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
         }
 
         @Override
-        public witem next() {
-            witem cur_data= (witem) current.data;
+        public T next() {
+            T cur_data= (T) current.data;
             current=current.next;
             return cur_data;
         }
     }
 
-    public Listiterator<witem> iterator(){
-        return new Listiterator<witem>();
+    public Listiterator<T> iterator(){
+        return new Listiterator<T>();
     }
 
     //base
 
     @Override
-    public void addFirst(witem d) {
+    public void addFirst(T d) {
         Node newNode = new Node(d, heail.next, heail);
         heail.next = newNode;
         newNode.next.prev = newNode;
@@ -82,9 +82,9 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
         return;
     }
 
-    public witem removeFirst(){
+    public T removeFirst(){
         if (size == 0) return null;
-        witem data = heail.next.data;
+        T data = heail.next.data;
         heail.next=heail.next.next;
         heail.next.prev=heail;
         size--;
@@ -92,7 +92,7 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
     }
 
     @Override
-    public void addLast(witem d) {
+    public void addLast(T d) {
         Node newNode = new Node(d, heail, heail.prev);
         newNode.prev.next = newNode;
         newNode.next.prev = newNode;
@@ -100,9 +100,9 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
         return;
     }
 
-    public witem removeLast(){
+    public T removeLast(){
         if (size == 0) return null;
-        witem data = heail.prev.data;
+        T data = heail.prev.data;
         heail.prev.prev.next = heail;
         heail.prev=heail.prev.prev;
         size--;
@@ -122,7 +122,7 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
     public String toString() {
         StringBuilder base=new StringBuilder();
         base.append("[");
-        for(witem i:this)
+        for(T i:this)
         {
             base.append(i.toString());
             base.append(" ");
@@ -132,17 +132,17 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
     }
 
     @Override
-    public witem get(int index){
+    public T get(int index){
         if(index+1>size())return null;//判断是否超出索引范围
         Listiterator iter =  iterator();
         while(iter.hasNext() && (index>0)) {
             iter.next();
             index--;
         }
-        return (witem) iter.next();
+        return (T) iter.next();
     }
 
-    public witem getRecursive(int index){
+    public T getRecursive(int index){
         return recursive(index,heail.next);
     }
 
@@ -162,15 +162,15 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
     @Override
     public boolean equals(Object o){
         if(o instanceof LinkedListDeque){
-            LinkedListDeque <witem> ohther = (LinkedListDeque) o;
+            LinkedListDeque <T> ohther = (LinkedListDeque) o;
             if(ohther.size() != size){
                 return false;
             }
             Listiterator oitr = ohther.iterator();
             Listiterator titr=this.iterator();
             while(titr.hasNext()){
-                witem t_item=(witem) titr.next();
-                witem o_item=(witem) oitr.next();
+                T t_item=(T) titr.next();
+                T o_item=(T) oitr.next();
                 if(!(t_item.equals(o_item))) return false;
 
             }
@@ -181,7 +181,7 @@ public class LinkedListDeque<witem> implements Iterable<witem>,Deque<witem> {
 
     //helper method
 
-    private witem recursive(int index,Node cur){
+    private T recursive(int index,Node cur){
         if(cur==heail && index==0) return null;//防止索引超范围
         if (index == 0) return cur.data;
         cur = cur.next;

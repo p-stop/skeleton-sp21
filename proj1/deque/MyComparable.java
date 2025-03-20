@@ -1,6 +1,6 @@
 package deque;
 
-public interface MyComparable<witem> {
-    public int compareTo (witem item);
+public interface MyComparable<T> {
+    public int compareTo (T item);
 }
 

@@ -2,28 +2,28 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
-    private witem[] arry;
+    private T[] arry;
 
     private int size;
 
     //construct
 
-    public ArrayDeque(witem d) {
-        arry = (witem[]) new Object[8];
+    public ArrayDeque(T d) {
+        arry = (T[]) new Object[8];
         arry[0] = d;
         size = 1;
     }
 
     public ArrayDeque() {
-        arry = (witem[]) new Object[8];
+        arry = (T[]) new Object[8];
         size = 0;
     }
 
     //iterator
 
-    public class ArrayDequeIterator implements Iterator<witem> {
+    private class ArrayDequeIterator implements Iterator<T> {
         private int pos = 0;
         public ArrayDequeIterator() {
             pos=0;
@@ -33,20 +33,20 @@ public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
             return pos < size;
         }
         @Override
-        public witem next() {
+        public T next() {
             return arry[pos++];
         }
     }
 
     @Override
-    public Iterator<witem> iterator() {
+    public Iterator<T> iterator() {
         return new ArrayDequeIterator();
     }
 
     //base do
 
     public void resize(int newSize,boolean first,boolean delate) {
-        witem[] newarry = (witem[]) new Object[newSize];
+        T[] newarry = (T[]) new Object[newSize];
         int pos = 0;
         int start=0;
         if(delate) {
@@ -65,7 +65,7 @@ public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
     }
 
     @Override
-    public void addFirst(witem d) {
+    public void addFirst(T d) {
         if(size >= arry.length) {
             resize(arry.length*2,true,false);
         }
@@ -79,7 +79,7 @@ public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
     }
 
     @Override
-    public void addLast(witem d) {
+    public void addLast(T d) {
         if(size >= arry.length) {
             resize(arry.length*2,false,false);
         }
@@ -88,11 +88,11 @@ public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
         return ;
     }
 
-    public witem removeFirst() {
+    public T removeFirst() {
         if(size == 0) {
             return null;
         }
-        witem lost = arry[0];
+        T lost = arry[0];
         size--;
         if(if_resize()){
             resize(arry.length/2,true,true);
@@ -103,11 +103,11 @@ public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
         return lost;
     }
 
-    public witem removeLast() {
+    public T removeLast() {
         if(size == 0) {
             return null;
         }
-        witem lost = arry[size-1];
+        T lost = arry[size-1];
         size--;
         if(if_resize()){
             resize(arry.length/2,false,true);
@@ -132,7 +132,7 @@ public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
     public String toString() {
         StringBuilder base=new StringBuilder();
         base.append("[");
-        for(witem i:this)
+        for(T i:this)
         {
             base.append(i.toString());
             base.append(" ");
@@ -142,7 +142,7 @@ public class ArrayDeque<witem> implements Iterable<witem> ,Deque<witem> {
     }
 
     @Override
-    public witem get(int index) {
+    public T get(int index) {
         if(index < 0 || index >= size){
             return null;
         }

@@ -2,15 +2,15 @@ package deque;
 
 import java.util.Comparator;
 
-public class MaxArrayDeque<witem> extends ArrayDeque<witem> { ;
-    private MyComparator<witem> arrycomparator;
-    witem max;
-    public MaxArrayDeque(MyComparator<witem> c){
+public class MaxArrayDeque<T> extends ArrayDeque<T> { ;
+    private MyComparator<T> arrycomparator;
+    T max;
+    public MaxArrayDeque(MyComparator<T> c){
         super();
         arrycomparator = c;
         max = null;
     }
-    public witem max(){
+    public T max(){
         if(size()==0){
             return null;
         }
@@ -24,7 +24,7 @@ public class MaxArrayDeque<witem> extends ArrayDeque<witem> { ;
         }
         return max;
     }
-    public witem max(MyComparator<witem> c){
+    public T max(MyComparator<T> c){
         if(size()==0){
             return null;
         }
@@ -40,7 +40,7 @@ public class MaxArrayDeque<witem> extends ArrayDeque<witem> { ;
     }
 
     @Override
-    public void addFirst(witem d) {
+    public void addFirst(T d) {
         super.addFirst(d);
         if(max!=null){
             if(arrycomparator.compare(max,d)<0){
@@ -49,15 +49,15 @@ public class MaxArrayDeque<witem> extends ArrayDeque<witem> { ;
         }
     }
     @Override
-    public witem removeFirst(){
-        witem ret = super.removeFirst();
+    public T removeFirst(){
+        T ret = super.removeFirst();
         if(max == ret){
             max=max();
         }
         return ret;
     }
     @Override
-    public void addLast(witem d) {
+    public void addLast(T d) {
         super.addLast(d);
         if(max!=null){
             if(arrycomparator.compare(max,d)<0){
@@ -66,8 +66,8 @@ public class MaxArrayDeque<witem> extends ArrayDeque<witem> { ;
         }
     }
     @Override
-    public witem removeLast(){
-        witem ret = super.removeLast();
+    public T removeLast(){
+        T ret = super.removeLast();
         if(max == ret){
             max=max();
         }
