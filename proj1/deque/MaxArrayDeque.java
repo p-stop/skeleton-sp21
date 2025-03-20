@@ -24,7 +24,7 @@ public class MaxArrayDeque<witem> extends ArrayDeque<witem> { ;
         }
         return max;
     }
-    public witem max(Comparator<witem> c){
+    public witem max(MyComparator<witem> c){
         if(size()==0){
             return null;
         }

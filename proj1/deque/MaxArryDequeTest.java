@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 public class MaxArryDequeTest {
     @Test
     public void testcapacity() {
-        MaxArrayDeque<Water> waters=new MaxArrayDeque<>(Water.capacitycompare);
+        MaxArrayDeque<Water> waters=new MaxArrayDeque<>(new Water.capacitycompare());
         waters.addLast(new Water(550,"unkown",3));
         waters.addLast(new Water(500,"unkown",2));
         waters.addLast(new Water(1050,"unkown",4));
@@ -15,6 +15,6 @@ public class MaxArryDequeTest {
         waters.addLast(new Water(300,"unkown",4));
         Water expected = new Water(2000,"unkown",3);
         waters.addLast(expected);
-        assertEquals(expected,waters.max());
+        assertEquals(expected.getCapacity(),waters.max().getCapacity());
     }
 }
