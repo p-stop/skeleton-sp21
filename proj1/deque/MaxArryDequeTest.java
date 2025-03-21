@@ -17,4 +17,26 @@ public class MaxArryDequeTest {
         waters.addLast(expected);
         assertEquals(expected.getCapacity(),waters.max().getCapacity());
     }
+    @Test
+    public void testRandomOperations() {
+        MaxArrayDeque<Integer> deque = new MaxArrayDeque<>(new MyComparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return a - b;
+            }
+        });
+
+        // Sequence of operations
+        System.out.println("MaxArrayDeque.size() ==> " + deque.size());
+        assertEquals(0, deque.size());
+
+        deque.addFirst(1);
+        System.out.println("MaxArrayDeque.addFirst(1)");
+
+        deque.addFirst(2);
+        System.out.println("MaxArrayDeque.addFirst(2)");
+
+        deque.addLast(3);
+        System.out.println("MaxArrayDeque.addLast(3)");
+    }
 }

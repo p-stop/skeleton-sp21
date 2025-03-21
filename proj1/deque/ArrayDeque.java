@@ -45,6 +45,8 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             pos=1;
         }
         System.arraycopy(arry, start, newarry, pos, size());
+        tail=size();
+        this.head=0;
         arry = newarry;
         return ;
     }
@@ -66,10 +68,8 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     @Override
     public void addLast(T d) {
-        if(tail==arry.length-1) {
+        if(tail>=arry.length-1) {
             resize(size()*2,false,head);
-            tail-=head;
-            head=0;
         }
         arry[tail++] = d;
         return ;
@@ -82,9 +82,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         T lost = arry[head];
         head++;
         if(if_resize()){
-            resize(arry.length/2,true,head);
-            tail-=head;
-            head=0;
+            resize(arry.length/2,false,head);
         }
         return lost;
     }
@@ -97,8 +95,6 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         tail--;
         if(if_resize()){
             resize(arry.length/2,false,head);
-            tail-=head;
-            head=0;
         }
         return lost;
     }
@@ -173,7 +169,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
     //helper
     private boolean if_resize() {
-        if(size()<=8){
+        if(arry.length<=8){
             return false;
         }
         else if(arry.length > size()*4){

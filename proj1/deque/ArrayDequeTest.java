@@ -233,4 +233,75 @@ public class ArrayDequeTest {
         deque.addFirst(11);
         // No removeFirst() for 11, as it's not specified in the sequence
     }
+    @Test
+    public void testRandomOperations() {
+        ArrayDeque<Integer> deque = new ArrayDeque<>();
+        Random rand = new Random();
+
+        for (int i = 0; i < 1000; i++) {
+            double operation = rand.nextDouble();
+
+            if (operation < 0.8) {
+                // 80% chance to addLast
+                int value = rand.nextInt(100);
+                deque.addLast(value);
+                System.out.println("addLast(" + value + ")");
+            } else if (operation < 0.9) {
+                // 10% chance to removeFirst
+                if (!deque.isEmpty()) {
+                    int removed = deque.removeFirst();
+                    System.out.println("removeFirst() ==> " + removed);
+                }
+            } else {
+                // 10% chance to check isEmpty
+                boolean isEmpty = deque.isEmpty();
+                System.out.println("isEmpty() ==> " + isEmpty);
+            }
+        }
+    }
+    @Test
+    public void testRandomOperations_pro() {
+        ArrayDeque<Integer> deque = new ArrayDeque<>();
+        Random rand = new Random();
+
+        // Define probabilities for each operation
+        double[] probabilities = new double[] {0.3, 0.3, 0.1, 0.1, 0.1, 0.1};
+
+        // Perform random operations
+        for (int i = 0; i < 1000; i++) {
+            double operation = rand.nextDouble();
+
+            if (operation < probabilities[0]) {
+                // 30% chance to addFirst
+                int value = rand.nextInt(100);
+                deque.addFirst(value);
+                System.out.println("addFirst(" + value + ")");
+            } else if (operation < probabilities[0] + probabilities[1]) {
+                // 30% chance to addLast
+                int value = rand.nextInt(100);
+                deque.addLast(value);
+                System.out.println("addLast(" + value + ")");
+            } else if (operation < probabilities[0] + probabilities[1] + probabilities[2]) {
+                // 10% chance to removeFirst
+                if (!deque.isEmpty()) {
+                    int removed = deque.removeFirst();
+                    System.out.println("removeFirst() ==> " + removed);
+                }
+            } else if (operation < probabilities[0] + probabilities[1] + probabilities[2] + probabilities[3]) {
+                // 10% chance to removeLast
+                if (!deque.isEmpty()) {
+                    int removed = deque.removeLast();
+                    System.out.println("removeLast() ==> " + removed);
+                }
+            } else if (operation < probabilities[0] + probabilities[1] + probabilities[2] + probabilities[3] + probabilities[4]) {
+                // 10% chance to check isEmpty
+                boolean isEmpty = deque.isEmpty();
+                System.out.println("isEmpty() ==> " + isEmpty);
+            } else {
+                // 10% chance to check size
+                int size = deque.size();
+                System.out.println("size() ==> " + size);
+            }
+        }
+    }
 }

@@ -306,5 +306,14 @@ public class LinkedListDequeTest {
         assertEquals(true, arrayDeque.equals(arrayDeque));
         assertEquals(true, deque.equals(deque));
     }
+    @Test
+    public void testequil_empty() {
+        LinkedListDeque<Integer> deque = new LinkedListDeque<>();
+        ArrayDeque<Integer> arrayDeque = new ArrayDeque<>();
+        assertEquals(true, deque.equals(arrayDeque));
+        assertEquals(true, arrayDeque.equals(deque));
+        assertEquals(true, arrayDeque.equals(arrayDeque));
+        assertEquals(true, deque.equals(deque));
+    }
 
 }
