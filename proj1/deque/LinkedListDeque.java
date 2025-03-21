@@ -189,9 +189,10 @@ public Iterator<T> iterator(){
             if(size!=other.size()) {
                 return false;
             }
-            Iterator<T> it1 = iterator();
+            Iterator<T> it1 = this.iterator();
+            Iterator<T> it2 = other.iterator();
             for(int i=0;i<size();i++){
-                if(!it1.next().equals(other.get(i))) {
+                if(!it1.next().equals(it2.next())) {
                     return false;
                 }
             }

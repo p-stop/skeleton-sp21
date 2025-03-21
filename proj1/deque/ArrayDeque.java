@@ -38,6 +38,9 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         return new ArrayDequeIterator();
     }
     private void resize(int newSize,boolean addfirst,int head) {
+        if(newSize<=8){
+            newSize=8;
+        }
         T[] newarry = (T[]) new Object[newSize];
         int pos = 0;
         int start=head;
@@ -68,6 +71,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     @Override
     public void addLast(T d) {
+        if(size()==0) {}
         if(tail>=arry.length-1) {
             resize(size()*2,false,head);
         }
@@ -146,7 +150,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             if(size() != other.size()) {
                 return false;
             }
-            for(int i=0; i<size(); i++) {
+            for(int i=other.head; i<size(); i++) {
                 if(arry[i] != other.arry[i]) {
                     return false;
                 }
@@ -158,8 +162,9 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
                 return false;
             }
             Iterator<T> it1 = other.iterator();
+            Iterator<T> it2 = this.iterator();
             for(int i=0; i<size(); i++) {
-                if(arry[i] != it1.next()) {
+                if(it2.next() != it1.next()) {
                     return false;
                 }
             }
