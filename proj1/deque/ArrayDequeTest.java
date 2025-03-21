@@ -146,7 +146,6 @@ public class ArrayDequeTest {
         }
         String expects="9";
         String expectss="9";
-        System.out.println(deque);
         assertEquals(expects, deque.get(8).toString());
     }
 
@@ -206,5 +205,32 @@ public class ArrayDequeTest {
             assertEquals((Integer) i, deque.removeFirst());
         }
         assertTrue(deque.isEmpty());
+    }
+    @Test
+    public void testOperationsSequence() {
+        ArrayDeque<Integer> deque = new ArrayDeque<>();
+
+        // Test isEmpty() when deque is empty
+        assertTrue(deque.isEmpty());
+
+        // Test addFirst() and removeFirst()
+        deque.addFirst(1);
+        assertEquals(Integer.valueOf(1), deque.removeFirst());
+
+        deque.addFirst(3);
+        assertEquals(Integer.valueOf(3), deque.removeFirst());
+
+        // Test isEmpty() again
+        assertTrue(deque.isEmpty());
+        assertTrue(deque.isEmpty());
+
+        deque.addFirst(7);
+        assertEquals(Integer.valueOf(7), deque.removeFirst());
+
+        deque.addFirst(9);
+        assertEquals(Integer.valueOf(9), deque.removeFirst());
+
+        deque.addFirst(11);
+        // No removeFirst() for 11, as it's not specified in the sequence
     }
 }

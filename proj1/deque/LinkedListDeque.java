@@ -1,6 +1,7 @@
 package deque;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 
 public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
@@ -48,10 +49,11 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
     //iterator implement
 
-    public class Listiterator<T> implements Iterator<T> {
+    private class Listiterator<T> implements Iterator<T> {
 
         private Node current;
         public Listiterator() {
+
             current = heail.next;
         }
         @Override
@@ -67,9 +69,12 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
         }
     }
 
-    public Listiterator<T> iterator(){
-        return new Listiterator<T>();
-    }
+//    public Listiterator<T> iterator(){
+//        return new Listiterator<T>();
+//    }
+public Iterator<T> iterator(){
+        return new Listiterator();
+}
 
     //base
 
@@ -113,6 +118,7 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
     @Override
     public int size(){
+
         return size;
     }
 
@@ -134,7 +140,7 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
     @Override
     public T get(int index){
         if(index+1>size())return null;//判断是否超出索引范围
-        Listiterator iter =  iterator();
+        Listiterator iter = (Listiterator) iterator();
         while(iter.hasNext() && (index>0)) {
             iter.next();
             index--;
@@ -161,32 +167,31 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
     @Override
     public boolean equals(Object o){
-        if(o instanceof LinkedListDeque){
-            LinkedListDeque <T> ohther = (LinkedListDeque) o;
-            if(ohther.size() != size){
+        if(o==this){
+            return true;
+        }
+        if(o instanceof LinkedListDeque) {
+            LinkedListDeque<T> other = (LinkedListDeque<T>) o;
+            if(size!=other.size()) {
                 return false;
             }
-            Listiterator oitr = ohther.iterator();
-            Listiterator titr=this.iterator();
-            while(titr.hasNext()){
-                T t_item=(T) titr.next();
-                T o_item=(T) oitr.next();
-                if(!(t_item.equals(o_item))) {
+            Iterator<T> it1 = iterator();
+            Iterator<T> it2 = other.iterator();
+            while(it1.hasNext()) {
+                if(!it1.next().equals(it2.next())) {
                     return false;
                 }
-
             }
             return true;
         }
-        else if(o instanceof ArrayDeque) {
-            ArrayDeque otherarry = (ArrayDeque) o;
-            if(otherarry.size() != size){
+        else if(o instanceof ArrayDeque){
+            ArrayDeque<T> other = (ArrayDeque<T>) o;
+            if(size!=other.size()) {
                 return false;
             }
-            Listiterator titr=this.iterator();
-            for(int i=0;i<size;i++){
-                T t_item=(T) titr.next();
-                if(!t_item.equals(otherarry.get(i))){
+            Iterator<T> it1 = iterator();
+            for(int i=0;i<size();i++){
+                if(!it1.next().equals(other.get(i))) {
                     return false;
                 }
             }

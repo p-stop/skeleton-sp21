@@ -293,4 +293,18 @@ public class LinkedListDequeTest {
             }
         }
     }
+    @Test
+    public void testequil() {
+        LinkedListDeque<Integer> deque = new LinkedListDeque<>();
+        ArrayDeque<Integer> arrayDeque = new ArrayDeque<>();
+        for(int i=0;i<10;i++){
+            arrayDeque.addLast(i);
+            deque.addLast(i);
+        }
+        assertEquals(true, deque.equals(arrayDeque));
+        assertEquals(true, arrayDeque.equals(deque));
+        assertEquals(true, arrayDeque.equals(arrayDeque));
+        assertEquals(true, deque.equals(deque));
+    }
+
 }

@@ -13,7 +13,7 @@ public class Water implements Comparable<Water>{
     }
     public static class capacitycompare implements Comparator<Water>{
         public  int  compare(Water a, Water b) {
-            return -a.capacity+b.capacity;
+            return a.capacity-b.capacity;
         }
     }
     public Water(int capacity, String origin, int quality) {
