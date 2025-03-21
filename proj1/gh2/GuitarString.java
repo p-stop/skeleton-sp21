@@ -3,6 +3,8 @@ package gh2;
 // TODO: uncomment the following import once you're ready to start this portion
  import deque.Deque;
 import deque.LinkedListDeque;
+ import edu.princeton.cs.algs4.StdAudio;
+ import edu.princeton.cs.algs4.StdDraw;
 // TODO: maybe more imports
 
 //Note: This file will not compile until you complete the Deque implementations
@@ -54,12 +56,12 @@ public class GuitarString {
         // TODO: Dequeue the front sample and enqueue a new sample that is
         //       the average of the two multiplied by the DECAY factor.
         //       **Do not call StdAudio.play().**
-        for(int i=0;i<buffer.size();i++) {
-            double s1= buffer.get(0);
-            double s2= buffer.get(1);
-            buffer.addLast((s1+s2)/2*DECAY);
-            buffer.removeFirst();
-        }
+
+        double s1= buffer.get(0);
+        double s2= buffer.get(1);
+        buffer.addLast((s1+s2)/2*DECAY);
+        buffer.removeFirst();
+
         return;
     }
 
@@ -67,6 +69,9 @@ public class GuitarString {
     public double sample() {
         // TODO: Return the correct thing.
         return buffer.get(0);
+    }
+    public static void main(String[]arg){
+        StdAudio.play(0.333);
     }
 }
     // TODO: Remove all comments that say TODO when you're done.
