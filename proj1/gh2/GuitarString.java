@@ -40,7 +40,11 @@ public class GuitarString {
         //       other. This does not mean that you need to check that the numbers
         //       are different from each other. It means you should repeatedly call
         //       Math.random() - 0.5 to generate new random numbers for each array index.
-//        Iterable<double> itr;
+        for(int i=0;i<buffer.size();i++) {
+            buffer.addLast(Math.random()-0.5);
+            buffer.removeFirst();
+        }
+        return;
     }
 
     /* Advance the simulation one time step by performing one iteration of

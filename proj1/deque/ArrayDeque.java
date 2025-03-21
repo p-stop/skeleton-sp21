@@ -57,9 +57,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             arry[--head] = d;
         }
         else{
-            if(tail!=0) {
-                resize(size()*2,0);
-            }
+            resize(size()*2,head);
             arry[--head] = d;
 
         }
