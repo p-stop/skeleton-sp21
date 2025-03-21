@@ -12,8 +12,8 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     public ArrayDeque() {
         arry = (T[]) new Object[8];
-        tail = 0;
-        head = 0;
+        tail = 2;
+        head = 2;
     }
 
     //iterator
@@ -37,19 +37,16 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
     }
-    private void resize(int newSize,boolean addfirst,int head) {
+    private void resize(int newSize,int head) {
         if(newSize<=8){
             newSize=8;
         }
         T[] newarry = (T[]) new Object[newSize];
-        int pos = 0;
+        int pos = newSize/4;
         int start=head;
-        if(addfirst) {
-            pos=1;
-        }
         System.arraycopy(arry, start, newarry, pos, size());
-        tail=size();
-        this.head=0;
+        tail=pos+size();
+        this.head=pos;
         arry = newarry;
         return ;
     }
@@ -61,19 +58,18 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         }
         else{
             if(tail!=0) {
-                resize(size()*2,true,0);
+                resize(size()*2,0);
             }
-            arry[0] = d;
-            tail++;
+            arry[--head] = d;
+
         }
         return ;
     }
 
     @Override
     public void addLast(T d) {
-        if(size()==0) {}
         if(tail>=arry.length-1) {
-            resize(size()*2,false,head);
+            resize(size()*2,head);
         }
         arry[tail++] = d;
         return ;
@@ -86,7 +82,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         T lost = arry[head];
         head++;
         if(if_resize()){
-            resize(arry.length/2,false,head);
+            resize(arry.length/2,head);
         }
         return lost;
     }
@@ -98,7 +94,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         T lost = arry[tail-1];
         tail--;
         if(if_resize()){
-            resize(arry.length/2,false,head);
+            resize(arry.length/2,head);
         }
         return lost;
     }
