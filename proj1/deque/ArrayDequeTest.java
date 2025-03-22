@@ -265,7 +265,7 @@ public class ArrayDequeTest {
         Random rand = new Random();
 
         // Define probabilities for each operation
-        double[] probabilities = new double[] {0.3, 0.3, 0.1, 0.1, 0.1, 0.1};
+        double[] probabilities = new double[]{0.3, 0.3, 0.1, 0.1, 0.1, 0.1};
 
         // Perform random operations
         for (int i = 0; i < 1000; i++) {
@@ -304,4 +304,144 @@ public class ArrayDequeTest {
             }
         }
     }
+        @Test
+        public void testArrayDequeEquals() {
+            ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+            ArrayDeque<Integer> ad2 = new ArrayDeque<>();
+
+            // Add elements to both deques
+            ad1.addLast(1);
+            ad1.addLast(2);
+            ad1.addLast(3);
+
+            ad2.addLast(1);
+            ad2.addLast(2);
+            ad2.addLast(3);
+
+            // Check equality
+            assertTrue(ad1.equals(ad2));
+            assertTrue(ad2.equals(ad1));
+        }
+
+        @Test
+        public void testLinkedListDequeEquals() {
+            LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+            LinkedListDeque<Integer> lld2 = new LinkedListDeque<>();
+
+            // Add elements to both deques
+            lld1.addLast(1);
+            lld1.addLast(2);
+            lld1.addLast(3);
+
+            lld2.addLast(1);
+            lld2.addLast(2);
+            lld2.addLast(3);
+
+            // Check equality
+            assertTrue(lld1.equals(lld2));
+            assertTrue(lld2.equals(lld1));
+        }
+
+        @Test
+        public void testArrayDequeAndLinkedListDequeEquals() {
+            ArrayDeque<Integer> ad = new ArrayDeque<>();
+            LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+
+            // Add elements to both deques
+            ad.addLast(1);
+            ad.addLast(2);
+            ad.addLast(3);
+
+            lld.addLast(1);
+            lld.addLast(2);
+            lld.addLast(3);
+
+            // Check equality
+            assertTrue(ad.equals(lld));
+            assertTrue(lld.equals(ad));
+        }
+
+        @Test
+        public void testArrayDequeNotEquals() {
+            ArrayDeque<Integer> ad1 = new ArrayDeque<>();
+            ArrayDeque<Integer> ad2 = new ArrayDeque<>();
+
+            // Add elements to both deques
+            ad1.addLast(1);
+            ad1.addLast(2);
+            ad1.addLast(3);
+
+            ad2.addLast(1);
+            ad2.addLast(2);
+            ad2.addLast(4); // Different element
+
+            // Check equality
+            assertFalse(ad1.equals(ad2));
+            assertFalse(ad2.equals(ad1));
+        }
+
+        @Test
+        public void testLinkedListDequeNotEquals() {
+            LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+            LinkedListDeque<Integer> lld2 = new LinkedListDeque<>();
+
+            // Add elements to both deques
+            lld1.addLast(1);
+            lld1.addLast(2);
+            lld1.addLast(3);
+
+            lld2.addLast(1);
+            lld2.addLast(2);
+            lld2.addLast(4); // Different element
+
+            // Check equality
+            assertFalse(lld1.equals(lld2));
+            assertFalse(lld2.equals(lld1));
+        }
+
+        @Test
+        public void testArrayDequeAndLinkedListDequeNotEquals() {
+            ArrayDeque<Integer> ad = new ArrayDeque<>();
+            LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+
+            // Add elements to both deques
+            ad.addLast(1);
+            ad.addLast(2);
+            ad.addLast(3);
+
+            lld.addLast(1);
+            lld.addLast(2);
+            lld.addLast(4); // Different element
+
+            // Check equality
+            assertFalse(ad.equals(lld));
+            assertFalse(lld.equals(ad));
+        }
+
+        @Test
+        public void testArrayDequeEqualsNull() {
+            ArrayDeque<Integer> ad = new ArrayDeque<>();
+
+            // Check equality with null
+            assertFalse(ad.equals(null));
+        }
+
+        @Test
+        public void testLinkedListDequeEqualsNull() {
+            LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+
+            // Check equality with null
+            assertFalse(lld.equals(null));
+        }
+
+        @Test
+        public void testArrayDequeAndLinkedListDequeEqualsNull() {
+            ArrayDeque<Integer> ad = new ArrayDeque<>();
+            LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+
+            // Check equality with null
+            assertFalse(ad.equals(null));
+            assertFalse(lld.equals(null));
+        }
+
 }

@@ -165,41 +165,78 @@ public Iterator<T> iterator(){
 
     //compare
 
-    @Override
-    public boolean equals(Object o){
-        if(o==this){
-            return true;
-        }
-        if(o instanceof LinkedListDeque) {
-            LinkedListDeque<T> other = (LinkedListDeque<T>) o;
-            if(size!=other.size()) {
-                return false;
-            }
-            Iterator<T> it1 = iterator();
-            Iterator<T> it2 = other.iterator();
-            while(it1.hasNext()) {
-                if(!it1.next().equals(it2.next())) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        else if(o instanceof ArrayDeque){
-            ArrayDeque<T> other = (ArrayDeque<T>) o;
-            if(size!=other.size()) {
-                return false;
-            }
-            Iterator<T> it1 = this.iterator();
-            Iterator<T> it2 = other.iterator();
-            for(int i=0;i<size();i++){
-                if(!it1.next().equals(it2.next())) {
-                    return false;
-                }
-            }
-            return true;
-        }
+//    @Override
+//    public boolean equals(Object o){
+//        if(o==this){
+//            return true;
+//        }
+//        if(o instanceof LinkedListDeque) {
+//            LinkedListDeque<T> other = (LinkedListDeque<T>) o;
+//            if(size!=other.size()) {
+//                return false;
+//            }
+//            Iterator<T> it1 = iterator();
+//            Iterator<T> it2 = other.iterator();
+//            while(it1.hasNext()) {
+//                if(!it1.next().equals(it2.next())) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+//        else if(o instanceof ArrayDeque){
+//            ArrayDeque<T> other = (ArrayDeque<T>) o;
+//            if(size!=other.size()) {
+//                return false;
+//            }
+//            Iterator<T> it1 = this.iterator();
+//            Iterator<T> it2 = other.iterator();
+//            for(int i=0;i<size();i++){
+//                if(!it1.next().equals(it2.next())) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
+@Override
+public boolean equals(Object o) {
+    if (o == this) {
+        return true;
+    }
+    if (o == null) {
         return false;
     }
+    if (o instanceof LinkedListDeque) {
+        LinkedListDeque<?> other = (LinkedListDeque<?>) o;
+        if (this.size() != other.size()) {
+            return false;
+        }
+        Iterator<?> it1 = this.iterator();
+        Iterator<?> it2 = other.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            if (!it1.next().equals(it2.next())) {
+                return false;
+            }
+        }
+        return true;
+    } else if (o instanceof ArrayDeque) {
+        ArrayDeque<?> other = (ArrayDeque<?>) o;
+        if (this.size() != other.size()) {
+            return false;
+        }
+        Iterator<?> it1 = this.iterator();
+        Iterator<?> it2 = other.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            if (!it1.next().equals(it2.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
 
     //helper method
 

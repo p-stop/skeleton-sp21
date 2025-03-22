@@ -70,8 +70,8 @@ public class GuitarString {
         // TODO: Return the correct thing.
         return buffer.get(0);
     }
-    public static void main(String[]arg){
-        StdAudio.play(0.333);
-    }
+//    public static void main(String[]arg){
+//        StdAudio.play(0.333);
+//    }
 }
     // TODO: Remove all comments that say TODO when you're done.
