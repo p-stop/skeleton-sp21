@@ -5,6 +5,8 @@ package gh2;
 import deque.LinkedListDeque;
  import edu.princeton.cs.algs4.StdAudio;
  import edu.princeton.cs.algs4.StdDraw;
+
+ import java.util.Random;
 // TODO: maybe more imports
 
 //Note: This file will not compile until you complete the Deque implementations
@@ -64,6 +66,16 @@ public class GuitarString {
 
         return;
     }
+//    public void tic() {
+//        double oldValue = buffer.removeFirst();
+//        double nextValue = buffer.get(0);
+//        double newDouble = (oldValue + nextValue) * 1.0; // 无衰减
+//        Random random = new Random();
+//        if (random.nextDouble() < 0.5) {
+//            newDouble = -newDouble; // 以 0.5 的概率翻转符号
+//        }
+//        buffer.addLast(newDouble);
+//    }
 
     /* Return the double at the front of the buffer. */
     public double sample() {
@@ -75,3 +87,37 @@ public class GuitarString {
 //    }
 }
     // TODO: Remove all comments that say TODO when you're done.
+//package gh2;
+//
+//import deque.ArrayDeque;
+//import deque.Deque;
+//
+//public class GuitarString{
+//    private static final int SR=44100;
+//    private static final double DECAY= .996;
+//    private Deque<Double> buffer;
+//    // 其他成员变量和构造函数
+//    public GuitarString(double frequency) {
+//        buffer = new ArrayDeque<Double>();
+//        for (int i = 0; i < Math.round(SR/frequency)/2; i++) {
+//            buffer.addLast((double)0);
+//        }
+//    }
+//    public void pluck() {
+//        for(int i = 0; i < buffer.size(); i++) {
+//            buffer.addLast(Math.random()-0.5);
+//            buffer.removeFirst();
+//        }
+//    }
+//
+//    public void tic() {
+//        double oldValue = buffer.removeFirst();
+//        double nextValue = buffer.get(0);
+//        double newDouble = (oldValue + nextValue)/2*DECAY;
+//        newDouble = -newDouble; // 翻转符号
+//        buffer.addLast(newDouble);
+//    }
+//    public double sample() {
+//        return buffer.get(0);
+//    }
+//}
