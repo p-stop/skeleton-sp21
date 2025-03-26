@@ -1,6 +1,6 @@
 package deque;
 
-import java.util.Arrays;
+
 import java.util.Iterator;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
@@ -20,16 +20,16 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     private class ArrayDequeIterator<T> implements Iterator<T> {
         private int pos = 0;
-        public ArrayDequeIterator() {
-            pos=head;
+        ArrayDequeIterator() {
+            pos = head;
         }
         @Override
         public boolean hasNext() {
-            return tail-pos>0;
+            return tail - pos > 0;
         }
         @Override
         public T next() {
-            return (T)arry[pos++];
+            return (T) arry[pos++];
         }
     }
 
@@ -37,62 +37,62 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
     }
-    private void resize(int newSize,int head) {
-        if(newSize<=8){
-            newSize=8;
+    private void resize(int newSize, int headpos) {
+        if (newSize <= 8) {
+            newSize = 8;
         }
         T[] newarry = (T[]) new Object[newSize];
-        int pos = newSize/4;
-        int start=head;
+        int pos = newSize / 4;
+        int start = headpos;
         System.arraycopy(arry, start, newarry, pos, size());
-        tail=pos+size();
-        this.head=pos;
+        tail = pos+size();
+        this.head = pos;
         arry = newarry;
-        return ;
+        return;
     }
 
     @Override
     public void addFirst(T d) {
-        if(head >0) {
+        if (head > 0) {
             arry[--head] = d;
         }
-        else{
-            resize(size()*2,head);
+        else {
+            resize(size() * 2,head);
             arry[--head] = d;
 
         }
-        return ;
+        return;
     }
 
     @Override
     public void addLast(T d) {
-        if(tail>=arry.length-1) {
-            resize(size()*2,head);
+        if (tail >= arry.length - 1) {
+            resize(size() * 2, head);
         }
         arry[tail++] = d;
-        return ;
+        return;
     }
 
     public T removeFirst() {
-        if(size() == 0) {
+        if (size() == 0) {
             return null;
         }
         T lost = arry[head];
         head++;
-        if(if_resize()){
-            resize(arry.length/2,head);
+        if (if_resize()) {
+            resize(arry.length / 2, head);
         }
         return lost;
     }
 
     public T removeLast() {
-        if(size() == 0) {
+        if (size() == 0) {
             return null;
         }
-        T lost = arry[tail-1];
+        T lost = arry[tail - 1];
         tail--;
-        if(if_resize()){
-            resize(arry.length/2,head);
+        if (if_resize()) {
+            resize(arry.length / 2, head);
         }
         return lost;
     }
@@ -101,7 +101,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     @Override
     public int size() {
-        return tail-head;
+        return tail - head;
     }
 
     //about output
@@ -122,7 +122,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     @Override
     public T get(int index) {
-        if(index < 0 || index+1 > size()){
+        if (index < 0 || index + 1 > size()) {
             return null;
         }
         return arry[head+index];
@@ -130,10 +130,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     @Override
     public void printDeque() {
-        for(int i=head;i<tail;i++){
+        for (int i = head; i < tail; i++) {
             System.out.print(arry[i]);
         }
-        return ;
+        return;
     }
     @Override
     public boolean equals(Object o) {
@@ -203,10 +203,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 //    }
     //helper
     private boolean if_resize() {
-        if(arry.length<=8){
+        if (arry.length <= 8) {
             return false;
         }
-        else if(arry.length > size()*4){
+        else if (arry.length > size() * 4) {
             return true;
         }
         return false;
