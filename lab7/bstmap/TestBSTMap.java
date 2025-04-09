@@ -86,5 +86,13 @@ public class TestBSTMap {
         b.put("hi", null);
         assertTrue(b.containsKey("hi"));
     }
+    @Test
+    public void piotest() {
+        BSTMap<String, Integer> b = new BSTMap<String, Integer>();
+        for (int i = 0; i < 455; i++)
+            b.put("hi" + i, 1);
+        b.printInOrder();
+    }
+
 
 }

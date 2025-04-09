@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.Stopwatch;
 
 /**
  * Performs a timing test on three different set implementations.
- * For BSTMap purposes assumes that <K,V> are <String, Integer> pairs.
+ * For bstmap.BSTMap purposes assumes that <K,V> are <String, Integer> pairs.
  *
  * @author Josh Hug
  * @author Brendan Hu
