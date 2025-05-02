@@ -7,7 +7,6 @@ import edu.princeton.cs.algs4.Stopwatch;
 
 import hashmap.Map61B;
 import hashmap.ULLMap;
-import hashmap.MyHashMap;
 
 /** Performs a timing test on three different set implementations.
  *  @author Josh Hug
