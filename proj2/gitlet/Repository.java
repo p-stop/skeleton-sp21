@@ -37,7 +37,7 @@ public class Repository {
         Commit init_commit = new Commit();
         init_commit.init();
         String name = Commit.encode_commit(init_commit);
-        File init = join(COMMITS_DIR, name);
+        File init = join(COMMITS_DIR, name+".txt");
         Utils.writeObject(init,init_commit);
         current_commit = name;
     }
@@ -48,7 +48,7 @@ public class Repository {
             throw new GitletException("File does not exist.");
         }
         //read the current commit
-        File cur_com_point = join(COMMITS_DIR, current_commit);
+        File cur_com_point = join(COMMITS_DIR, current_commit+".txt");
         Commit cur_com = Utils.readObject(cur_com_point, Commit.class);
         //judge if stage the file
         String added_id = Utils.sha1(added);
@@ -69,27 +69,24 @@ public class Repository {
         if(STAGING_DIR.list() == null){
             throw new GitletException("No changes added to the commit.");
         }
-        File cur_com_point = join(COMMITS_DIR, current_commit);
+        File cur_com_point = join(COMMITS_DIR, current_commit+".txt");
         Commit cur_com = Utils.readObject(cur_com_point, Commit.class);
         File[] files = STAGING_DIR.listFiles();
         for (File file : files) {
-            cur_com.putFile(file.getName(), sha1(file));
-            Path source = file.toPath();
-            Path destination = REPO_DIR.toPath().resolve(source.getFileName());
-            try {
-                Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            String id = Utils.sha1(file);
+            cur_com.putFile(file.getName(), id);
+            File source = join(STAGING_DIR, file.getName());
+            File dest = join(REPO_DIR, id+".txt");
+            Utils.writeContents(dest, Utils.readContents(source));
         }
         String com_id = Commit.encode_commit(cur_com);
-        File com_point = join(COMMITS_DIR, com_id);
+        File com_point = join(COMMITS_DIR, com_id+".txt");
         Utils.writeObject(com_point, cur_com);
         cur_com.change(message, current_commit);
         current_commit = com_id;
     }
     public static void checkout_1_2(String commit_id,String filename) {
-        File target_com = join(COMMITS_DIR, commit_id);
+        File target_com = join(COMMITS_DIR, commit_id+".txt");
         if(target_com.exists()){
             Commit cur_com = Utils.readObject(target_com, Commit.class);
             if(cur_com.containsFile(filename)){
@@ -105,12 +102,12 @@ public class Repository {
         }
     }
     public static void log() {
-        File target_com = join(COMMITS_DIR, current_commit);
+        File target_com = join(COMMITS_DIR, current_commit+".txt");
         String cur_id = current_commit;
         Commit cur_com = Utils.readObject(target_com, Commit.class);
         while(cur_com.getMessage()!="initial commit"){
             System.out.printf("===\ncommit %s\nDate: %s\n%s\n",cur_id,cur_com.gettimestamp(),cur_com.getMessage());
-            target_com = join(COMMITS_DIR, cur_com.getParent_hash());
+            target_com = join(COMMITS_DIR, cur_com.getParent_hash()+".txt");
             cur_id = cur_com.getParent_hash();
             cur_com = Utils.readObject(target_com, Commit.class);
         }
