@@ -1,8 +1,6 @@
 package gitlet;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -46,26 +44,7 @@ public class Commit implements Serializable {
         return tracked_files.containsKey(filename);
     }
     public static String encode_commit(Commit commit) {
-        List<Object> elements = new ArrayList();
-        elements.add(commit.getMessage());
-        elements.add(commit.gettimestamp());
-        elements.add(commit.getParent_hash());
-        elements.add(Utils.serialize(commit.tracked_files));
-        return Utils.sha1(elements);
+        return Utils.sha1(commit.message,commit.gettimestamp(),commit.getParent_hash(),Utils.serialize(commit.tracked_files));
     }
 
-    public static void  main(String[] args) {
-        Date date = new Date();
-        String timestamp;
-        // 创建 SimpleDateFormat 对象，指定日期格式
-//        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z");
-//        // 设置时区
-//        sdf.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
-//        // 格式化日期
-//        String formattedDate = sdf.format(date);
-        timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS'Z'").format(new Date());
-        System.out.println(timestamp);
-
-
-    }
 }
