@@ -5,14 +5,11 @@ import java.io.File;
 public class Fileder implements Comparable {
     private String name;
     private String hash;
-    private File file;
-    private Fileder is_file;
+    private String path;
 
-    public Fileder(String name, File file, Fileder is_file) {
+    public Fileder(String name, String hash) {
         this.name = name;
-        this.file = file;
-        this.is_file = is_file;
-        hash = Utils.sha1(file);
+        this.hash = hash;
     }
 
     @Override

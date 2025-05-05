@@ -13,12 +13,31 @@ public class Main {
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
-//                Repository.
+                Repository.init();
                 break;
             case "add":
-                // TODO: handle the `add [filename]` command
+                String filename = args[1];
+                Repository.add(filename);
                 break;
             // TODO: FILL THE REST IN
+            case "commit":
+                String commit_message = args[1];
+                Repository.commit(commit_message);
+                break;
+            case "checkout":
+                String what = args[1];
+                if(what.equals("--")) {
+                    Repository.checkout_1_2(Repository.current_commit,args[2]);
+                }
+                else if(args.length == 4) {
+                    Repository.checkout_1_2(args[1], args[3]);
+                }
+                else {}
+
+                break;
+            case "log":
+                Repository.log();
+                break;
         }
     }
 }
