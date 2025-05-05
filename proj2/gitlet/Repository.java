@@ -52,7 +52,7 @@ public class Repository {
         File cur_com_point = join(COMMITS_DIR, heads.cur_commit+".txt");
         Commit cur_com = Utils.readObject(cur_com_point, Commit.class);
         //judge if stage the file
-        String added_id = Utils.sha1(added);
+        String added_id = Utils.sha1(Utils.readContents(added));
         if (cur_com.containsFile(filename)) {
             if(added_id == cur_com.getID(filename)){
                 File is_staged = join(STAGING_DIR, filename);
@@ -75,7 +75,7 @@ public class Repository {
         Commit cur_com = Utils.readObject(cur_com_point, Commit.class);
         File[] files = STAGING_DIR.listFiles();
         for (File file : files) {
-            String id = Utils.sha1(file);
+            String id = Utils.sha1(Utils.readContents(file));
             cur_com.putFile(file.getName(), id);
             File source = join(STAGING_DIR, file.getName());
             File dest = join(REPO_DIR, id+".txt");
@@ -116,5 +116,10 @@ public class Repository {
         }
         System.out.printf("===\ncommit %s\nDate: %s\n%s\n",cur_id,cur_com.gettimestamp(),cur_com.getMessage());
     }
+//    public static void main(String[] args) {
+//        File CWD = new File(System.getProperty("user.dir"));
+//        File test = Utils.join(CWD, "1.txt");
+//        System.out.println(Utils.sha1(Utils.readContents(test)));
+//    }
 
 }
