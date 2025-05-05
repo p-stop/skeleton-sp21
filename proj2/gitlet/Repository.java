@@ -31,7 +31,6 @@ public class Repository {
     public static String current_commit;
 
     public static void init(){
-        GITLET_DIR.mkdir();
         STAGING_DIR.mkdir();
         REPO_DIR.mkdir();
         COMMITS_DIR.mkdir();
