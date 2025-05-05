@@ -18,6 +18,7 @@ public class Commit implements Serializable {
         message = "initial commit";
         timestamp = "00:00:00 UTC, Thursday, 1 January 1970";
         tracked_files = null;
+        parent_hash = null;
     }
 
     public String getMessage() {
@@ -45,9 +46,13 @@ public class Commit implements Serializable {
     }
     public static String encode_commit(Commit commit) {
         if (commit.tracked_files == null) {
-            return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash);
+            return Utils.sha1(commit.message,commit.timestamp);
         }
         return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,commit.tracked_files.keySet().toArray());
     }
-
+    public static void main(String[] args) {
+        Commit init_commit = new Commit();
+        init_commit.init();
+        System.out.println(encode_commit(init_commit));
+    }
 }
