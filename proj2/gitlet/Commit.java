@@ -51,9 +51,4 @@ public class Commit implements Serializable {
         }
         return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,commit.tracked_files.keySet().toArray());
     }
-    public static void main(String[] args) {
-        File CWD = new File(System.getProperty("user.dir"));
-        File test = Utils.join(CWD, "pom.xml");
-        System.out.println(test.exists());
-    }
 }
