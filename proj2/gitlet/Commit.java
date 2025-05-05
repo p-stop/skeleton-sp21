@@ -44,7 +44,7 @@ public class Commit implements Serializable {
         return tracked_files.containsKey(filename);
     }
     public static String encode_commit(Commit commit) {
-        return Utils.sha1(commit.message,commit.gettimestamp(),commit.getParent_hash(),Utils.serialize(commit.tracked_files));
+        return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,commit.tracked_files.keySet().toArray());
     }
 
 }
