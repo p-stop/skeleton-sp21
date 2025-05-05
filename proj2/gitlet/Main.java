@@ -25,9 +25,10 @@ public class Main {
                 Repository.commit(commit_message);
                 break;
             case "checkout":
+                HEAD heads = Utils.readObject(Repository.HEADS,HEAD.class);
                 String what = args[1];
                 if(what.equals("--")) {
-                    Repository.checkout_1_2(Repository.current_commit,args[2]);
+                    Repository.checkout_1_2(heads.cur_commit,args[2]);
                 }
                 else if(args.length == 4) {
                     Repository.checkout_1_2(args[1], args[3]);

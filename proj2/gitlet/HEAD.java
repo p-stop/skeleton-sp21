@@ -4,5 +4,5 @@ import java.io.File;
 import java.io.Serializable;
 
 public class HEAD implements Serializable {
-    public static String cur_commit;
+    public  String cur_commit;
 }
