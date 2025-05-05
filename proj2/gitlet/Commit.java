@@ -1,4 +1,5 @@
 package gitlet;
+import java.io.File;
 import java.io.Serializable;
 
 import java.text.SimpleDateFormat;
@@ -51,8 +52,8 @@ public class Commit implements Serializable {
         return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,commit.tracked_files.keySet().toArray());
     }
     public static void main(String[] args) {
-        Commit init_commit = new Commit();
-        init_commit.init();
-        System.out.println(encode_commit(init_commit));
+        File CWD = new File(System.getProperty("user.dir"));
+        File test = Utils.join(CWD, "pom.xml");
+        System.out.println(test.exists());
     }
 }

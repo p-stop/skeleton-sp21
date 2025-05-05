@@ -48,7 +48,7 @@ public class Repository {
 
     public static void add(String filename){
         File added = join(CWD, filename);
-        if (added.exists()) {
+        if (!(added.exists())) {
             throw new GitletException("File does not exist.");
         }
         //read the current commit
