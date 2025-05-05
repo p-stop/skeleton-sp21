@@ -51,11 +51,11 @@ public class Commit implements Serializable {
     public static void  main(String[] args) {
         Date date = new Date();
         String timestamp;
-        // ´´½¨ SimpleDateFormat ¶ÔÏó£¬Ö¸¶¨ÈÕÆÚ¸ñÊ½
+        // åˆ›å»º SimpleDateFormat å¯¹è±¡ï¼ŒæŒ‡å®šæ—¥æœŸæ ¼å¼
 //        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z");
-//        // ÉèÖÃÊ±Çø
+//        // è®¾ç½®æ—¶åŒº
 //        sdf.setTimeZone(TimeZone.getTimeZone("GMT-08:00"));
-//        // ¸ñÊ½»¯ÈÕÆÚ
+//        // æ ¼å¼åŒ–æ—¥æœŸ
 //        String formattedDate = sdf.format(date);
         timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS'Z'").format(new Date());
         System.out.println(timestamp);
