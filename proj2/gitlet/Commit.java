@@ -4,9 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TimeZone;
+import java.util.*;
 
 public class Commit implements Serializable {
     private String message;
@@ -46,6 +44,14 @@ public class Commit implements Serializable {
     }
     public boolean containsFile(String filename) {
         return tracked_files.containsKey(filename);
+    }
+    public static String encode_commit(Commit commit) {
+        List<Object> elements = new ArrayList();
+        elements.add(commit.getMessage());
+        elements.add(commit.gettimestamp());
+        elements.add(commit.getParent_hash());
+        elements.add(Utils.serialize(commit.tracked_files));
+        return Utils.sha1(elements);
     }
 
     public static void  main(String[] args) {

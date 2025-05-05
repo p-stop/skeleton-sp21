@@ -36,7 +36,7 @@ public class Repository {
         }
         Commit init_commit = new Commit();
         init_commit.init();
-        String name = Utils.sha1(init_commit);
+        String name = Commit.encode_commit(init_commit);
         File init = join(COMMITS_DIR, name);
         Utils.writeObject(init,init_commit);
         current_commit = name;
@@ -82,7 +82,7 @@ public class Repository {
                 throw new RuntimeException(e);
             }
         }
-        String com_id = Utils.sha1(cur_com);
+        String com_id = Commit.encode_commit(cur_com);
         File com_point = join(COMMITS_DIR, com_id);
         Utils.writeObject(com_point, cur_com);
         cur_com.change(message, current_commit);
