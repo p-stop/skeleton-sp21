@@ -1,7 +1,5 @@
 package gitlet;
-import java.io.File;
 import java.io.Serializable;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -17,7 +15,7 @@ public class Commit implements Serializable {
 
     public void init() {
         message = "initial commit";
-        timestamp = "00:00:00 UTC, Thursday, 1 January 1970";
+        timestamp = "Thu Jan 1 00:00:00 1970 +0000";
         tracked_files = new HashMap<>();
         parent_hash = null;
     }
@@ -35,7 +33,7 @@ public class Commit implements Serializable {
         return tracked_files.get(filename);
     }
     public void change(String message,String parent_hash) {
-        timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS'Z'").format(new Date());
+        timestamp = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z",Locale.US).format(new Date());
         this.message = message;
         this.parent_hash = parent_hash;
     }
@@ -46,6 +44,9 @@ public class Commit implements Serializable {
         return tracked_files.containsKey(filename);
     }
     public static String encode_commit(Commit commit) {
-        return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,commit.tracked_files.keySet().toArray());
+        if(commit.tracked_files.isEmpty()){
+            return Utils.sha1(commit.message,commit.timestamp);
+        }
+        return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,Utils.serialize(commit.tracked_files));
     }
 }

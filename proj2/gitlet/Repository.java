@@ -63,7 +63,7 @@ public class Repository {
             }
         }
         File dest = join(STAGING_DIR, filename);
-        Utils.writeContents(dest, added);
+        Utils.writeContents(dest, Utils.readContents(added));
     }
 
     public static void commit(String message) {
@@ -81,18 +81,19 @@ public class Repository {
             File dest = join(REPO_DIR, id+".txt");
             Utils.writeContents(dest, Utils.readContents(source));
         }
+        cur_com.change(message, heads.cur_commit);
         String com_id = Commit.encode_commit(cur_com);
         File com_point = join(COMMITS_DIR, com_id+".txt");
         Utils.writeObject(com_point, cur_com);
-        cur_com.change(message, heads.cur_commit);
         heads.cur_commit = com_id;
+        Utils.writeObject(HEADS,heads);
     }
     public static void checkout_1_2(String commit_id,String filename) {
         File target_com = join(COMMITS_DIR, commit_id+".txt");
         if(target_com.exists()){
             Commit cur_com = Utils.readObject(target_com, Commit.class);
             if(cur_com.containsFile(filename)){
-                File old_file = join(REPO_DIR, cur_com.getID(filename));
+                File old_file = join(REPO_DIR, cur_com.getID(filename)+".txt");
                 Utils.writeContents(join(CWD, filename), Utils.readContentsAsString(old_file));
             }
             else {
@@ -108,18 +109,22 @@ public class Repository {
         File target_com = join(COMMITS_DIR, heads.cur_commit+".txt");
         String cur_id = heads.cur_commit;
         Commit cur_com = Utils.readObject(target_com, Commit.class);
-        while(cur_com.getMessage()!="initial commit"){
-            System.out.printf("===\ncommit %s\nDate: %s\n%s\n",cur_id,cur_com.gettimestamp(),cur_com.getMessage());
+        while(cur_com.getParent_hash() != null){
+            System.out.printf("===\ncommit %s\nDate: %s\n%s\n\n",cur_id,cur_com.gettimestamp(),cur_com.getMessage());
             target_com = join(COMMITS_DIR, cur_com.getParent_hash()+".txt");
             cur_id = cur_com.getParent_hash();
             cur_com = Utils.readObject(target_com, Commit.class);
         }
-        System.out.printf("===\ncommit %s\nDate: %s\n%s\n",cur_id,cur_com.gettimestamp(),cur_com.getMessage());
+        System.out.printf("===\ncommit %s\nDate: %s\n%s\n\n",cur_id,cur_com.gettimestamp(),cur_com.getMessage());
     }
-//    public static void main(String[] args) {
+    public static void main(String[] args) {
 //        File CWD = new File(System.getProperty("user.dir"));
 //        File test = Utils.join(CWD, "1.txt");
 //        System.out.println(Utils.sha1(Utils.readContents(test)));
-//    }
+        Commit init_commit = new Commit();
+        init_commit.init();
+
+        System.out.println(Commit.encode_commit(init_commit));
+    }
 
 }
