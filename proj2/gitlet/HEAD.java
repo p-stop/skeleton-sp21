@@ -1,16 +1,24 @@
 package gitlet;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 public class HEAD implements Serializable {
-    public  String cur_commit;
-    //about branch
-    public  String bname;
-    public HashMap<String,String> heads;
+    public String cur_commit;
+    public String bname;
+    public TreeMap<String, String> heads;
+
     public HEAD() {
         cur_commit = "";
         bname = "init";
-        heads = new HashMap<>();
+        heads = new TreeMap<>();
+    }
+
+    public void print() {
+        System.out.println("*" + bname);
+        for (String key : heads.keySet()) {
+            System.out.println(key);
+        }
+        System.out.printf("\n");
     }
 }

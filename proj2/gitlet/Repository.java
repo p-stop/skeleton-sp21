@@ -3,6 +3,7 @@ package gitlet;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import static gitlet.Utils.*;
 
@@ -119,6 +120,7 @@ public class Repository {
         heads.cur_commit = com_id;
         Utils.writeObject(HEADS,heads);
     }
+
     public static void checkout_1_2(String commit_id,String filename) {
         if (!(GITLET_DIR.exists())) {
             System.out.println("Not in an initialized Gitlet directory.");
@@ -142,6 +144,27 @@ public class Repository {
             return;
         }
     }
+
+    public static void checkout3(String bname) {
+        if (!(GITLET_DIR.exists())) {
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
+        }
+        HEAD heads = Utils.readObject(HEADS,HEAD.class);
+        if(heads.heads.containsKey(bname)){
+            if(heads.heads.get(bname).equals(heads.cur_commit)){
+                System.out.println("No need to checkout the current branch.");
+                return;
+            }
+            else {
+                reset(heads.heads.get(bname));
+            }
+        }
+        else {
+            System.out.println("No such branch exists.");
+        }
+    }
+
     public static void rm(String filename) {
         if (!(GITLET_DIR.exists())) {
             System.out.println("Not in an initialized Gitlet directory.");
@@ -228,6 +251,43 @@ public class Repository {
         }
     }
 
+    public static void status() {
+        if (!(GITLET_DIR.exists())) {
+            System.out.println("Found no commit with that message.");
+            return;
+        }
+        //ready for modified_files
+        LinkedList<File> modifications = new LinkedList<>();
+        LinkedList<File> deletions = new LinkedList<>();
+        HEAD heads = Utils.readObject(HEADS,HEAD.class);
+        File current_com = join(COMMITS_DIR, heads.cur_commit+".txt");
+        Commit cur_com = Utils.readObject(current_com,Commit.class);
+
+        System.out.println("=== Branches ===");
+        heads.print();
+        System.out.println("=== Staged Files ===");
+        File[] staged_files = STAGING_DIR.listFiles();
+        for (File file : staged_files) {
+            System.out.println(file.getName());
+        }
+        System.out.printf("\n");;
+        System.out.println("=== Removed Files ===");
+        File[] removed_files = REMOVAL_DIR.listFiles();
+        for (File file : removed_files) {
+            System.out.println(file.getName());
+        }
+        System.out.printf("\n");
+        System.out.println("=== Modifications Not Staged For Commit ===");
+        File[] CWD_files = CWD.listFiles();
+        if(cwd_file.exists()){
+            String cwd_id = Utils.sha1(Utils.readContents(cwd_file));
+            if(cwd_id.equals(cur_com.getID(cwd_file.getName()))){
+
+            }
+        }
+
+    }
+
     public static void branch(String branch_name) {
         if (!(GITLET_DIR.exists())) {
             System.out.println("Not in an initialized Gitlet directory.");
@@ -239,6 +299,7 @@ public class Repository {
             return;
         }
         head_class.heads.put(branch_name, head_class.cur_commit);
+        Utils.writeObject(HEADS,head_class);
     }
 
     public static void rmb(String branch_name) {
@@ -258,6 +319,7 @@ public class Repository {
             System.out.println("A branch with that name does not exist.");
             return;
         }
+        Utils.writeObject(HEADS,head_class);
     }
 
     public static void reset(String com_id) {
@@ -279,7 +341,21 @@ public class Repository {
         //supplement files in tar_cur
         tar_com.restore_all();
         //clear staging area
-        
+        File[] staging_files = STAGING_DIR.listFiles();
+        File[] removal_files = REMOVAL_DIR.listFiles();
+        if(staging_files.length!=0){
+            for(File file : staging_files){
+                Utils.delete(file);
+            }
+        }
+        if(removal_files.length!=0){
+            for(File file : removal_files){
+                Utils.delete(file);
+            }
+        }
+        //move head
+        heads.cur_commit = com_id;
+        Utils.writeObject(HEADS,heads);
     }
 
 

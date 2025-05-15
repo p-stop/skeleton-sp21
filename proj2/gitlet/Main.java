@@ -1,8 +1,5 @@
 package gitlet;
 
-import java.nio.file.Files;
-
-import static gitlet.Repository.GITLET_DIR;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
@@ -48,8 +45,14 @@ public class Main {
                 else if(args.length == 4) {
                     Repository.checkout_1_2(args[1], args[3]);
                 }
-                else {}
+                else {
+                    Repository.checkout3(args[1]);
+                }
 
+                break;
+            case "reset":
+                String com_id = args[1];
+                Repository.reset(com_id);
                 break;
             case "find":
                 String mes = args[1];
