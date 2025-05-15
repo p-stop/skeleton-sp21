@@ -1,4 +1,5 @@
 package gitlet;
+import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,6 +33,10 @@ public class Commit implements Serializable {
     public String getID(String filename) {
         return tracked_files.get(filename);
     }
+
+    public void del(String filename) {
+        tracked_files.remove(filename);
+    }
     public void change(String message,String parent_hash) {
         timestamp = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z",Locale.US).format(new Date());
         this.message = message;
@@ -43,10 +48,25 @@ public class Commit implements Serializable {
     public boolean containsFile(String filename) {
         return tracked_files.containsKey(filename);
     }
+    public void delFile(String filename) {
+        tracked_files.remove(filename);
+    }
+    public void restore_all() {
+        for (String filename : tracked_files.keySet()) {
+            File sour = Utils.join(Repository.REPO_DIR,tracked_files.get(filename)+".txt");
+            File dest = Utils.join(Repository.CWD,filename);
+            Utils.writeContents(dest,Utils.readContents(sour));
+        }
+    }
     public static String encode_commit(Commit commit) {
         if(commit.tracked_files.isEmpty()){
             return Utils.sha1(commit.message,commit.timestamp);
         }
         return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,Utils.serialize(commit.tracked_files));
+    }
+
+    //log helper function
+    public void print_log(String hashcode){
+        System.out.printf("===\ncommit %s\nDate: %s\n%s\n\n",hashcode,this.gettimestamp(),this.getMessage());
     }
 }

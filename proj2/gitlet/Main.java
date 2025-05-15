@@ -1,5 +1,9 @@
 package gitlet;
 
+import java.nio.file.Files;
+
+import static gitlet.Repository.GITLET_DIR;
+
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author TODO
  */
@@ -9,10 +13,15 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
+        if (args.length == 0) {
+            throw new GitletException("Please enter a command");
+        }
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
+                if(args.length != 1) {
+                    throw new GitletException("Incorrect operands.");
+                }
                 Repository.init();
                 break;
             case "add":
@@ -21,6 +30,9 @@ public class Main {
                 break;
             // TODO: FILL THE REST IN
             case "commit":
+                if(args.length != 2) {
+                    throw new GitletException("Incorrect operands.");
+                }
                 String commit_message = args[1];
                 Repository.commit(commit_message);
                 break;
@@ -36,9 +48,31 @@ public class Main {
                 else {}
 
                 break;
+            case "find":
+                String mes = args[1];
+                Repository.find(mes);
+                break;
+            case "branch":
+                String branch_name = args[1];
+                Repository.branch(branch_name);
+                break;
+            case "rm-branch":
+                String branch = args[1];
+                Repository.rmb(branch);
+                break;
             case "log":
                 Repository.log();
                 break;
+            case"global-log":
+                Repository.global_log();
+                break;
+            case "rm":
+                Repository.rm(args[1]);
+                break;
+            case"empty":
+                Repository.if_empty();
+            default:
+                throw new GitletException("No command with that name exists.");
         }
     }
 }

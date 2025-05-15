@@ -220,6 +220,14 @@ class Utils {
         }
     }
 
+    static boolean delete(File file) {
+        if (!file.isDirectory()) {
+            return file.delete();
+        } else {
+            return false;
+        }
+    }
+
 
 
     /* MESSAGES AND ERROR REPORTING */
