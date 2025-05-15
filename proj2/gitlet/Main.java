@@ -14,13 +14,15 @@ public class Main {
      */
     public static void main(String[] args) {
         if (args.length == 0) {
-            throw new GitletException("Please enter a command");
+            System.out.println("Please enter a command");
+            return;
         }
         String firstArg = args[0];
         switch(firstArg) {
             case "init":
                 if(args.length != 1) {
-                    throw new GitletException("Incorrect operands.");
+                    System.out.println("Incorrect operands.");
+                    return;
                 }
                 Repository.init();
                 break;
@@ -31,7 +33,8 @@ public class Main {
             // TODO: FILL THE REST IN
             case "commit":
                 if(args.length != 2) {
-                    throw new GitletException("Incorrect operands.");
+                    System.out.println("Incorrect operands.");
+                    return;
                 }
                 String commit_message = args[1];
                 Repository.commit(commit_message);

@@ -29,7 +29,8 @@ public class Repository {
 
     public static void init(){
         if (Files.exists(GITLET_DIR.toPath())) {
-            throw new GitletException("A Gitlet version-control system already exists in the current directory.");
+            System.out.println("A Gitlet version-control system already exists in the current directory.");
+            return;
         }
         GITLET_DIR.mkdirs();
         STAGING_DIR.mkdir();
@@ -49,12 +50,14 @@ public class Repository {
 
     public static void add(String filename){
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
 
         File added = join(CWD, filename);
         if (!(added.exists())) {
-            throw new GitletException("File does not exist.");
+            System.out.println("File does not exist.");
+            return;
         }
         //read the current commit
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
@@ -77,12 +80,14 @@ public class Repository {
 
     public static void commit(String message) {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
         //if no staged file?
         String[] fileList = STAGING_DIR.list();
         if (fileList == null || fileList.length == 0){
-            throw new GitletException("No changes added to the commit.");
+            System.out.println("No changes added to the commit.");
+            return;
         }
         //call cur_commit
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
@@ -116,7 +121,8 @@ public class Repository {
     }
     public static void checkout_1_2(String commit_id,String filename) {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
 
         File target_com = join(COMMITS_DIR, commit_id+".txt");
@@ -127,16 +133,19 @@ public class Repository {
                 Utils.writeContents(join(CWD, filename), Utils.readContentsAsString(old_file));
             }
             else {
-                throw new GitletException("File does not exist in that commit.");
+                System.out.println("File does not exist in that commit.");
+                return;
             }
         }
         else {
-            throw new GitletException("No commit with that id exists.");
+            System.out.println("No commit with that id exists.");
+            return;
         }
     }
     public static void rm(String filename) {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
 
         //call the cur_commit
@@ -148,7 +157,8 @@ public class Repository {
         File is_staged = join(STAGING_DIR, filename);
         //if rm is useless
         if(!(is_staged.exists()) && !(cur_com.containsFile(filename))){
-            throw new GitletException("No reason to remove the file.");
+            System.out.println("No reason to remove the file.");
+            return;
         }
         //do two things for rm()
         if(is_staged.exists()){
@@ -167,7 +177,8 @@ public class Repository {
 
     public static void find(String message) {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
 
         File[] commit_itr = COMMITS_DIR.listFiles();
@@ -180,13 +191,15 @@ public class Repository {
             }
         }
         if(!found){
-            throw new GitletException("No commit with that id exists.");
+            System.out.println("No commit with that id exists.");
+            return;
         }
     }
 
     public static void log() {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Found no commit with that message.");
+            System.out.println("Found no commit with that message.");
+            return;
         }
 
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
@@ -204,7 +217,8 @@ public class Repository {
 
     public static void global_log() {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
 
         File[] commit_itr = COMMITS_DIR.listFiles();
@@ -216,38 +230,45 @@ public class Repository {
 
     public static void branch(String branch_name) {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
         HEAD head_class = Utils.readObject(HEADS,HEAD.class);
         if(head_class.heads.containsKey(branch_name)){
-            throw new GitletException("A branch with that name already exists.");
+            System.out.println("A branch with that name already exists.");
+            return;
         }
         head_class.heads.put(branch_name, head_class.cur_commit);
     }
 
     public static void rmb(String branch_name) {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
         HEAD head_class = Utils.readObject(HEADS,HEAD.class);
         if(head_class.heads.containsKey(branch_name)){
             if(head_class.heads.get(branch_name).equals(head_class.cur_commit)){
-                throw new GitletException("Cannot remove the current branch.");
+                System.out.println("Cannot remove the current branch.");
+                return;
             }
             head_class.heads.remove(branch_name);
         }
         else {
-            throw new GitletException("A branch with that name does not exist.");
+            System.out.println("A branch with that name does not exist.");
+            return;
         }
     }
 
     public static void reset(String com_id) {
         if (!(GITLET_DIR.exists())) {
-            throw new GitletException("Not in an initialized Gitlet directory.");
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
         }
         File given_com = join(COMMITS_DIR, com_id+".txt");
         if(!(given_com.exists())) {
-            throw new GitletException("No commit with that id exists.");
+            System.out.println("No commit with that id exists.");
+            return;
         }
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
         File target_com = join(COMMITS_DIR, heads.cur_commit+".txt");
@@ -268,7 +289,8 @@ public class Repository {
         String[] fileList = STAGING_DIR.list();
         System.out.println(fileList.length);
         if (fileList == null || fileList.length == 0){
-            throw new GitletException("No changes added to the commit.");
+            System.out.println("No changes added to the commit.");
+            return;
         }
 
     }
@@ -292,7 +314,8 @@ public class Repository {
             }
             else {
                 if(!(tar.containsFile(file.getName()))){
-                    throw new GitletException("There is an untracked file in the way; delete it, or add and commit it first.");
+                    System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                    return;
                 }
                 else {
                     tar.delFile(file.getName());
