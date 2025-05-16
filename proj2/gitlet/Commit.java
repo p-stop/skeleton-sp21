@@ -21,6 +21,7 @@ public class Commit implements Serializable {
         timestamp = "Thu Jan 1 00:00:00 1970 +0000";
         tracked_files = new HashMap<>();
         parent_hash = null;
+        merge = "";
     }
 
     public String getMessage() {
