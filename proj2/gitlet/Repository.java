@@ -67,6 +67,11 @@ public class Repository {
         //judge if stage the file
         String added_id = Utils.sha1(Utils.readContents(added));
         if (cur_com.containsFile(filename)) {
+            //sp_judge
+            File is_rem = join(REMOVAL_DIR, filename);
+            if(is_rem.exists()){
+                Utils.delete(is_rem);
+            }
             if(added_id.equals(cur_com.getID(filename))){
                 File is_staged = join(STAGING_DIR, filename);
                 if(is_staged.exists()){
@@ -74,11 +79,6 @@ public class Repository {
                 }
                 return;
             }
-        }
-        //sp_judge
-        File is_rem = join(REMOVAL_DIR, filename);
-        if(is_rem.exists()){
-            Utils.delete(is_rem);
         }
 
         File dest = join(STAGING_DIR, filename);
@@ -124,6 +124,7 @@ public class Repository {
         if (rm_files != null) {
             for (File file : rm_files) {
                 cur_com.del(file.getName());
+                Utils.delete(file);
             }
         }
         //update commit messages
@@ -166,11 +167,16 @@ public class Repository {
         }
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
         if(heads.heads.containsKey(bname)){
-            if(heads.heads.get(bname).equals(heads.cur_commit)){
+            if(heads.bname.equals(bname)){
                 System.out.println("No need to checkout the current branch.");
             }
             else {
                 String com_id = heads.heads.get(bname);
+                if(heads.heads.get(bname).equals(heads.cur_commit)){
+                    heads.bname = bname;
+                    Utils.writeObject(HEADS,heads);
+                    return;
+                }
                 if(!restore(com_id)) {
                     return;
                 }
@@ -390,7 +396,7 @@ public class Repository {
             }
         }
         if(!found){
-            System.out.println("No commit with that id exists.");
+            System.out.println("Found no commit with that message.");
         }
     }
 
@@ -561,7 +567,9 @@ public class Repository {
             }
             // If file is in target, remove from tar's list to avoid redundant deletion
             if (inTarget) {
-                tar.delFile(fileName);
+                if(cur.getID(fileName).equals(tar.getID(fileName))){
+                    tar.delFile(fileName);
+                }
             }
         }
         return true;
