@@ -10,7 +10,7 @@ public class HEAD implements Serializable {
 
     public HEAD() {
         cur_commit = "";
-        bname = "init";
+        bname = "master";
         heads = new TreeMap<>();
     }
 
