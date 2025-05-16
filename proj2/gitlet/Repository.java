@@ -205,6 +205,162 @@ public class Repository {
         }
     }
 
+    public static void merge(String given_branch) {
+        //check errors
+        if (!(GITLET_DIR.exists())) {
+            System.out.println("Not in an initialized Gitlet directory.");
+            return;
+        }
+        File[] sta_add = STAGING_DIR.listFiles();
+        File[] sta_rm = REMOVAL_DIR.listFiles();
+        if(sta_add != null || sta_rm != null){
+            System.out.println("You have uncommitted changes.");
+            return;
+        }
+        HEAD heads = Utils.readObject(HEADS,HEAD.class);
+        if (!(heads.heads.containsKey(given_branch))) {
+            System.out.println("A branch with that name does not exist.");
+            return;
+        }
+        if(heads.bname.equals(given_branch)){
+            System.out.println("Cannot merge a branch with itself.");
+            return;
+        }
+        //find split node
+        String cur_id = heads.cur_commit;
+        String giv_id = heads.heads.get(given_branch);
+        File cur_com_id = join(COMMITS_DIR, heads.cur_commit+".txt");
+        File given_com_id = join(COMMITS_DIR, heads.heads.get(given_branch)+".txt");
+        Commit cur_com = Utils.readObject(cur_com_id, Commit.class);
+        Commit given_com = Utils.readObject(given_com_id, Commit.class);
+        Commit n_com = Utils.readObject(cur_com_id, Commit.class);
+        int lenC=0;
+        int lenG=0;
+        while(cur_com.getParent_hash()!=null){
+            lenC++;
+            cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+        }
+        while(given_com.getParent_hash()!=null){
+            lenG++;
+            given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+        }
+        if(lenC>lenG){
+            for(int i=0;i<lenC-lenG;i++){
+                cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+            }
+        }
+        else if(lenG>lenC){
+            for(int i=0;i<lenG-lenC;i++){
+                given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+            }
+        }
+        boolean error1 = true;
+        while(!(cur_com.getParent_hash().equals(given_com.getParent_hash()))) {
+            error1 = false;
+            cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+            given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+        }
+        if(error1) {
+            if(lenC >= lenG) {
+                System.out.println("Given branch is an ancestor of the current branch.");
+                return;
+            }
+            else {
+                checkout3(given_branch);
+                System.out.println("Current branch fast-forwarded.");
+                return;
+            }
+        }
+        Commit split = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+        //fuck error
+        if(!find_untracked2(CWD,cur_com,given_com,split)) {
+            return;
+        }
+        //do merge
+        String[] split_files = split.getnames();
+        boolean cur_change = false;
+        boolean given_change = false;
+        boolean cur_del = false;
+        boolean given_del = false;
+        for(String split_file : split_files) {
+            //judge if only one modified
+            if (cur_com.containsFile(split_file)) {
+                cur_com.del(split_file);
+                if(cur_com.getID(split_file).equals(split.getID(split_file))){}
+                else {
+                    cur_change = true;
+                }
+            }
+            else {
+                cur_change = true;
+            }
+            if(given_com.containsFile(split_file)) {
+                given_com.del(split_file);
+                if(given_com.getID(split_file).equals(split.getID(split_file))){}
+                else {
+                    given_change = true;
+                }
+            }
+            else {
+                given_change = true;
+            }
+            //if only cur_com change,do nothing.
+            if (given_change && !cur_change) {
+                if(given_com.containsFile(split_file)) {
+                    File cwd_file = join(CWD,split_file);
+                    File rep_file = join(REPO_DIR,given_com.getID(split_file)+".txt");
+                    File sta_file = join(STAGING_DIR,split_file);
+                    Utils.writeContents(cwd_file, Utils.readContentsAsString(rep_file));
+                    Utils.writeContents(sta_file, Utils.readContentsAsString(rep_file));
+                }
+                else {
+                    File cwd_file = join(CWD,split_file);
+                    File rep_file = join(REPO_DIR,given_com.getID(split_file)+".txt");
+                    File rem_file = join(REMOVAL_DIR,split_file);
+                    if(cwd_file.exists()){
+                        Utils.delete(cwd_file);
+                    }
+                    Utils.writeContents(rem_file, Utils.readContentsAsString(rep_file));
+                }
+            }
+            else if(given_change && cur_change) {
+                process_conflict(split_file,cur_com,given_com,cur_com.getID(split_file).equals(given_com.getID(split_file)));
+            }
+        }
+        String[] cur_files = cur_com.getnames();
+        for(String cur_file : cur_files) {
+            if(given_com.containsFile(cur_file)) {
+                given_com.del(cur_file);
+                if(cur_com.getID(cur_file).equals(given_com.getID(cur_file))){}
+                else {
+                    process_conflict(cur_file,given_com,given_com,false);
+                }
+            }
+            else {
+                process_conflict(cur_file,given_com,given_com,true);
+            }
+        }
+        String[] given_files = given_com.getnames();
+        for(String given_file : given_files) {
+            if(cur_com.containsFile(given_file)) {
+                if(cur_com.getID(given_file).equals(given_com.getID(given_file))){}
+                else {
+                    process_conflict(given_file,cur_com,given_com,false);
+                }
+            }
+            else {
+                process_conflict(given_file,cur_com,given_com,true);
+            }
+        }
+        n_com.setmerge("Merge: "+cur_id.substring(0,7)+" "+giv_id.substring(0,7),giv_id);
+        n_com.change("Merged development into "+heads.bname,cur_id);
+        String n_id = Utils.sha1(n_com);
+        Utils.writeObject(join(COMMITS_DIR,n_id+".txt"),n_com);
+        heads.cur_commit = n_id;
+        heads.heads.put(heads.bname,n_id);
+        Utils.writeObject(HEADS,heads);
+    }
+
     public static void find(String message) {
         if (!(GITLET_DIR.exists())) {
             System.out.println("Not in an initialized Gitlet directory.");
@@ -277,29 +433,35 @@ public class Repository {
         heads.print();
         System.out.println("=== Staged Files ===");
         File[] staged_files = STAGING_DIR.listFiles();
-        for (File file : staged_files) {
-            System.out.println(file.getName());
+        if (staged_files != null) {
+            for (File file : staged_files) {
+                System.out.println(file.getName());
+            }
         }
-        System.out.printf("\n");;
+        System.out.printf("\n");
         System.out.println("=== Removed Files ===");
         File[] removed_files = REMOVAL_DIR.listFiles();
-        for (File file : removed_files) {
-            System.out.println(file.getName());
+        if (removed_files != null) {
+            for (File file : removed_files) {
+                System.out.println(file.getName());
+            }
         }
         System.out.printf("\n");
         System.out.println("=== Modifications Not Staged For Commit ===");
-        find_modified(modifications,cur_com,staged_files);
+        if (staged_files != null) {
+            find_modified(modifications,cur_com,staged_files);
+        }
         for (String mod : modifications) {
             System.out.println(mod);
         }
-        System.out.printf("\n");;
+        System.out.printf("\n");
         System.out.println("=== Untracked Files ===");
         Commit n_cur_com = Utils.readObject(current_com,Commit.class);
-        find_untracked(CWD,untracked,n_cur_com,staged_files);
+        find_untracked(CWD,untracked,n_cur_com);
         for (String un : untracked) {
             System.out.println(un);
         }
-        System.out.printf("\n");;
+        System.out.printf("\n");
     }
 
     public static void branch(String branch_name) {
@@ -467,7 +629,7 @@ public class Repository {
             }
         }
     }
-    private static void find_untracked(File file,TreeSet<String> untracked, Commit cur, File[] staged_files) {
+    private static void find_untracked(File file,TreeSet<String> untracked, Commit cur) {
         if (file.isDirectory()) {
             if (file.getName().equals(".gitlet")) {
                 return;
@@ -475,7 +637,7 @@ public class Repository {
             File[] files = file.listFiles();
             if (files != null) {
                 for (File child : files) {
-                    find_untracked(child, untracked, cur, staged_files);
+                    find_untracked(child, untracked, cur);
                 }
             }
         }
@@ -490,6 +652,79 @@ public class Repository {
             }
         }
     }
+    private static boolean find_untracked2(File file,Commit cur,Commit giv,Commit spl) {
+        if (file.isDirectory()) {
+            if (file.getName().equals(".gitlet")) {
+                return true;
+            }
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    if(!find_untracked2(child,cur,giv,spl)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        else {
+            boolean inGiven = giv.containsFile(file.getName());
+            boolean inCurrent = cur.containsFile(file.getName());
+            boolean inspl = spl.containsFile(file.getName());
+            File if_cwd = join(CWD, file.getName());
+            boolean incwd = if_cwd.exists();
+            if(!inCurrent && incwd) {
+                if(!inspl && inGiven) {
+                    System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                    return false;
+                }
+                if (inspl && inGiven) {
+                    if(!(spl.getID(file.getName()).equals(giv.getID(file.getName())))) {
+                        System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    private static void process_conflict(String split_file,Commit cur_com,Commit given_com,boolean stay) {
+        System.out.println("Encountered a merge conflict.");
+        String c_content;
+        String g_content;
+        File cwd_file = join(CWD,split_file);
+        File repg_file = join(REPO_DIR,given_com.getID(split_file)+".txt");
+        File repc_file = join(REPO_DIR,cur_com.getID(split_file)+".txt");
+        File sta_file = join(STAGING_DIR,split_file);
+        if (repc_file.exists()) {
+            c_content = Utils.readContentsAsString(repc_file);
+        }
+        else {
+            c_content = "";
+        }
+        if (repg_file.exists()) {
+            g_content = Utils.readContentsAsString(repg_file);
+        }
+        else {
+            g_content = "";
+        }
+        if(stay){
+            if(c_content.equals(g_content)){
+                return;
+            }
+            else {
+                if(c_content.isEmpty()){
+                    Utils.writeContents(cwd_file, g_content);
+                    Utils.writeContents(sta_file, g_content);
+                }
+                return;
+            }
+        }
+        Utils.writeContents(cwd_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>\n");
+        Utils.writeContents(sta_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>\n");
+    }
+
+
+
     public static void main(String[] args) {
         Commit init_commit = new Commit();
         init_commit.init();

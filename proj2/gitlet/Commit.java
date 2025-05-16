@@ -9,6 +9,8 @@ public class Commit implements Serializable {
     private String timestamp;
     private HashMap<String,String> tracked_files;
     private String parent_hash;
+    private String parent_hash2;
+    private String merge;
 
     public Commit() {
         tracked_files = new HashMap<>();
@@ -44,6 +46,7 @@ public class Commit implements Serializable {
         timestamp = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z",Locale.US).format(new Date());
         this.message = message;
         this.parent_hash = parent_hash;
+        merge = "";
     }
     public void putFile(String filename, String hash) {
         tracked_files.put(filename,hash);
@@ -67,9 +70,18 @@ public class Commit implements Serializable {
         }
         return Utils.sha1(commit.message,commit.timestamp,commit.parent_hash,Utils.serialize(commit.tracked_files));
     }
+    public void setmerge(String mergemes,String parent_hash) {
+        this.merge = mergemes;
+        this.parent_hash2 = parent_hash;
+    }
 
     //log helper function
     public void print_log(String hashcode){
-        System.out.printf("===\ncommit %s\nDate: %s\n%s\n\n",hashcode,this.gettimestamp(),this.getMessage());
+        if(merge.isEmpty()) {
+            System.out.printf("===\ncommit %s\nDate: %s\n%s\n\n",hashcode,this.gettimestamp(),this.getMessage());
+        }
+        else {
+            System.out.printf("===\ncommit %s\n%s\nDate: %s\n%s\n\n",hashcode,merge,this.gettimestamp(),this.getMessage());
+        }
     }
 }
