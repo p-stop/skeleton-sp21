@@ -230,7 +230,7 @@ public class Repository {
         }
         File[] sta_add = STAGING_DIR.listFiles();
         File[] sta_rm = REMOVAL_DIR.listFiles();
-        if(sta_add != null || sta_rm != null){
+        if(sta_add.length != 0 || sta_rm.length != 0){
             System.out.println("You have uncommitted changes.");
             return;
         }
