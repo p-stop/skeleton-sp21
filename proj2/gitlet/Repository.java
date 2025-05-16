@@ -75,6 +75,12 @@ public class Repository {
                 return;
             }
         }
+        //sp_judge
+        File is_rem = join(REMOVAL_DIR, filename);
+        if(is_rem.exists()){
+            Utils.delete(is_rem);
+        }
+
         File dest = join(STAGING_DIR, filename);
         Utils.writeContents(dest, Utils.readContents(added));
     }
@@ -84,9 +90,14 @@ public class Repository {
             System.out.println("Not in an initialized Gitlet directory.");
             return;
         }
+        if(message.isEmpty()) {
+            System.out.println("Please enter a commit message.");
+            return;
+        }
         //if no staged file?
         String[] fileList = STAGING_DIR.list();
-        if (fileList == null || fileList.length == 0){
+        String[] fileList2 = REMOVAL_DIR.list();
+        if (fileList2.length == 0 && fileList.length == 0){
             System.out.println("No changes added to the commit.");
             return;
         }
@@ -475,7 +486,6 @@ public class Repository {
             return;
         }
         head_class.heads.put(branch_name, head_class.cur_commit);
-        head_class.bname = branch_name;
         Utils.writeObject(HEADS,head_class);
     }
 
