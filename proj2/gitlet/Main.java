@@ -78,6 +78,9 @@ public class Main {
             case "rm":
                 Repository.rm(args[1]);
                 break;
+            case "merge":
+                Repository.merge(args[1]);
+                break;
             default:
                 throw new GitletException("No command with that name exists.");
         }
