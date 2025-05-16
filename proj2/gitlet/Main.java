@@ -72,11 +72,12 @@ public class Main {
             case"global-log":
                 Repository.global_log();
                 break;
+            case "status":
+                Repository.status();
+                break;
             case "rm":
                 Repository.rm(args[1]);
                 break;
-            case"empty":
-                Repository.if_empty();
             default:
                 throw new GitletException("No command with that name exists.");
         }

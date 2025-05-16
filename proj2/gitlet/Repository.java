@@ -2,8 +2,8 @@ package gitlet;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 import static gitlet.Utils.*;
 
@@ -67,7 +67,7 @@ public class Repository {
         //judge if stage the file
         String added_id = Utils.sha1(Utils.readContents(added));
         if (cur_com.containsFile(filename)) {
-            if(added_id == cur_com.getID(filename)){
+            if(added_id.equals(cur_com.getID(filename))){
                 File is_staged = join(STAGING_DIR, filename);
                 if(is_staged.exists()){
                     Utils.restrictedDelete(is_staged);
@@ -94,22 +94,26 @@ public class Repository {
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
         File cur_com_point = join(COMMITS_DIR, heads.cur_commit+".txt");
         Commit cur_com = Utils.readObject(cur_com_point, Commit.class);
-        //track staged files one by one
+        //track staged files one.txt by one.txt
         File[] files = STAGING_DIR.listFiles();
-        for (File file : files) {
-            //save files in repo
-            String id = Utils.sha1(Utils.readContents(file));
-            cur_com.putFile(file.getName(), id);
-            File source = join(STAGING_DIR, file.getName());
-            File dest = join(REPO_DIR, id+".txt");
-            Utils.writeContents(dest, Utils.readContents(source));
-            //clear staging area
-            Utils.delete(source);
+        if (files != null) {
+            for (File file : files) {
+                //save files in repo
+                String id = Utils.sha1(Utils.readContents(file));
+                cur_com.putFile(file.getName(), id);
+                File source = join(STAGING_DIR, file.getName());
+                File dest = join(REPO_DIR, id+".txt");
+                Utils.writeContents(dest, Utils.readContents(source));
+                //clear staging area
+                Utils.delete(source);
+            }
         }
         //process removal area
         File[] rm_files = REMOVAL_DIR.listFiles();
-        for (File file : rm_files) {
-            cur_com.del(file.getName());
+        if (rm_files != null) {
+            for (File file : rm_files) {
+                cur_com.del(file.getName());
+            }
         }
         //update commit messages
         cur_com.change(message, heads.cur_commit);
@@ -118,6 +122,7 @@ public class Repository {
         File com_point = join(COMMITS_DIR, com_id+".txt");
         Utils.writeObject(com_point, cur_com);
         heads.cur_commit = com_id;
+        heads.heads.put(heads.bname,com_id);
         Utils.writeObject(HEADS,heads);
     }
 
@@ -136,12 +141,10 @@ public class Repository {
             }
             else {
                 System.out.println("File does not exist in that commit.");
-                return;
             }
         }
         else {
             System.out.println("No commit with that id exists.");
-            return;
         }
     }
 
@@ -154,10 +157,15 @@ public class Repository {
         if(heads.heads.containsKey(bname)){
             if(heads.heads.get(bname).equals(heads.cur_commit)){
                 System.out.println("No need to checkout the current branch.");
-                return;
             }
             else {
-                reset(heads.heads.get(bname));
+                String com_id = heads.heads.get(bname);
+                if(!restore(com_id)) {
+                    return;
+                }
+                heads.cur_commit = com_id;
+                heads.bname = bname;
+                Utils.writeObject(HEADS,heads);
             }
         }
         else {
@@ -174,7 +182,6 @@ public class Repository {
         //call the cur_commit
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
         File target_com = join(COMMITS_DIR, heads.cur_commit+".txt");
-        String cur_id = heads.cur_commit;
         Commit cur_com = Utils.readObject(target_com, Commit.class);
         //if file exist in stage area
         File is_staged = join(STAGING_DIR, filename);
@@ -183,7 +190,7 @@ public class Repository {
             System.out.println("No reason to remove the file.");
             return;
         }
-        //do two things for rm()
+        //do two.txt things for rm()
         if(is_staged.exists()){
             is_staged.delete();
         }
@@ -206,16 +213,17 @@ public class Repository {
 
         File[] commit_itr = COMMITS_DIR.listFiles();
         boolean found = false;
-        for (File file : commit_itr) {
-            Commit cur_com = Utils.readObject(file, Commit.class);
-            if(cur_com.getMessage().equals(message)){
-                System.out.println(file.getName().replace(".txt",""));
-                found = true;
+        if (commit_itr != null) {
+            for (File file : commit_itr) {
+                Commit cur_com = Utils.readObject(file, Commit.class);
+                if(cur_com.getMessage().equals(message)){
+                    System.out.println(file.getName().replace(".txt",""));
+                    found = true;
+                }
             }
         }
         if(!found){
             System.out.println("No commit with that id exists.");
-            return;
         }
     }
 
@@ -245,9 +253,11 @@ public class Repository {
         }
 
         File[] commit_itr = COMMITS_DIR.listFiles();
-        for (File file : commit_itr) {
-            Commit cur_com = Utils.readObject(file, Commit.class);
-            cur_com.print_log(file.getName().replace(".txt",""));
+        if (commit_itr != null) {
+            for (File file : commit_itr) {
+                Commit cur_com = Utils.readObject(file, Commit.class);
+                cur_com.print_log(file.getName().replace(".txt",""));
+            }
         }
     }
 
@@ -257,8 +267,8 @@ public class Repository {
             return;
         }
         //ready for modified_files
-        LinkedList<File> modifications = new LinkedList<>();
-        LinkedList<File> deletions = new LinkedList<>();
+        TreeSet<String> untracked = new TreeSet<>();
+        TreeSet<String> modifications = new TreeSet<>();
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
         File current_com = join(COMMITS_DIR, heads.cur_commit+".txt");
         Commit cur_com = Utils.readObject(current_com,Commit.class);
@@ -278,14 +288,18 @@ public class Repository {
         }
         System.out.printf("\n");
         System.out.println("=== Modifications Not Staged For Commit ===");
-        File[] CWD_files = CWD.listFiles();
-        if(cwd_file.exists()){
-            String cwd_id = Utils.sha1(Utils.readContents(cwd_file));
-            if(cwd_id.equals(cur_com.getID(cwd_file.getName()))){
-
-            }
+        find_modified(modifications,cur_com,staged_files);
+        for (String mod : modifications) {
+            System.out.println(mod);
         }
-
+        System.out.printf("\n");;
+        System.out.println("=== Untracked Files ===");
+        Commit n_cur_com = Utils.readObject(current_com,Commit.class);
+        find_untracked(CWD,untracked,n_cur_com,staged_files);
+        for (String un : untracked) {
+            System.out.println(un);
+        }
+        System.out.printf("\n");;
     }
 
     public static void branch(String branch_name) {
@@ -299,6 +313,7 @@ public class Repository {
             return;
         }
         head_class.heads.put(branch_name, head_class.cur_commit);
+        head_class.bname = branch_name;
         Utils.writeObject(HEADS,head_class);
     }
 
@@ -309,7 +324,7 @@ public class Repository {
         }
         HEAD head_class = Utils.readObject(HEADS,HEAD.class);
         if(head_class.heads.containsKey(branch_name)){
-            if(head_class.heads.get(branch_name).equals(head_class.cur_commit)){
+            if(branch_name.equals(head_class.bname)){
                 System.out.println("Cannot remove the current branch.");
                 return;
             }
@@ -323,79 +338,155 @@ public class Repository {
     }
 
     public static void reset(String com_id) {
-        if (!(GITLET_DIR.exists())) {
-            System.out.println("Not in an initialized Gitlet directory.");
-            return;
-        }
-        File given_com = join(COMMITS_DIR, com_id+".txt");
-        if(!(given_com.exists())) {
-            System.out.println("No commit with that id exists.");
-            return;
-        }
-        HEAD heads = Utils.readObject(HEADS,HEAD.class);
-        File target_com = join(COMMITS_DIR, heads.cur_commit+".txt");
-        Commit cur_com = Utils.readObject(target_com, Commit.class);
-        Commit tar_com = Utils.readObject(given_com, Commit.class);
-        //delete all files which shouldn't show and remain files need to show
-        re_help_reset(CWD,cur_com,tar_com);
-        //supplement files in tar_cur
-        tar_com.restore_all();
-        //clear staging area
-        File[] staging_files = STAGING_DIR.listFiles();
-        File[] removal_files = REMOVAL_DIR.listFiles();
-        if(staging_files.length!=0){
-            for(File file : staging_files){
+    if (!GITLET_DIR.exists()) {
+        System.out.println("Not in an initialized Gitlet directory.");
+        return;
+    }
+    boolean result = restore(com_id);
+    if(!result){
+        return;
+    }
+    // Move HEAD
+    HEAD heads = Utils.readObject(HEADS, HEAD.class);
+    heads.cur_commit = com_id;
+    heads.heads.put(heads.bname,com_id);
+    Utils.writeObject(HEADS, heads);
+}
+
+    private static void clearDirectory(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
                 Utils.delete(file);
             }
         }
-        if(removal_files.length!=0){
-            for(File file : removal_files){
-                Utils.delete(file);
-            }
-        }
-        //move head
-        heads.cur_commit = com_id;
-        Utils.writeObject(HEADS,heads);
     }
 
-
-
-
-    public static void if_empty(){
-        String[] fileList = STAGING_DIR.list();
-        System.out.println(fileList.length);
-        if (fileList == null || fileList.length == 0){
-            System.out.println("No changes added to the commit.");
-            return;
-        }
-
-    }
-    private static void re_help_reset(File file, Commit cur, Commit tar) {
-        if(file.isDirectory()){
+    private static boolean re_help_reset(File file, Commit cur, Commit tar, LinkedList<File> del) {
+        if (file.isDirectory()) {
             File[] files = file.listFiles();
-            if(files.length != 0){
-                for(File re_file:files){
-                    re_help_reset(re_file, cur, tar);
+            if (files != null) {
+                for (File child : files) {
+                    if (child.getName().equals(".gitlet")) {
+                        continue;
+                    }
+                    if (!re_help_reset(child, cur, tar, del)) {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            String fileName = file.getName();
+            boolean inCurrent = cur.containsFile(fileName);
+            boolean inTarget = tar.containsFile(fileName);
+
+            if (inCurrent && !inTarget) {
+                del.add(file);
+            } else if (!inCurrent && !inTarget) {
+                // File is untracked and would be overwritten
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                return false;
+            }
+            // If file is in target, remove from tar's list to avoid redundant deletion
+            if (inTarget) {
+                tar.delFile(fileName);
+            }
+        }
+        return true;
+    }
+    private static boolean restore(String com_id) {
+        File givenCom = join(COMMITS_DIR, com_id + ".txt");
+        if (!givenCom.exists()) {
+            System.out.println("No commit with that id exists.");
+            return false;
+        }
+        HEAD heads = Utils.readObject(HEADS, HEAD.class);
+        File currentComFile = join(COMMITS_DIR, heads.cur_commit + ".txt");
+        Commit currentCommit = Utils.readObject(currentComFile, Commit.class);
+        Commit targetCommit = Utils.readObject(givenCom, Commit.class);
+
+        // Track files to delete
+        LinkedList<File> toDelete = new LinkedList<>();
+        if (!re_help_reset(CWD, currentCommit, targetCommit, toDelete)) {
+            return false;
+        }
+        for (File file : toDelete) {
+            Utils.delete(file);
+        }
+
+        // Restore all files from target commit
+        targetCommit.restore_all();
+
+        // Clear staging and removal areas
+        clearDirectory(STAGING_DIR);
+        clearDirectory(REMOVAL_DIR);
+        return true;
+    }
+    private static void find_modified(TreeSet<String> modified,Commit cur, File[] staged_files) {
+        for (File file : staged_files) {
+            if(cur.containsFile(file.getName())){
+                cur.del(file.getName());
+            }
+            File cwd_file = join(CWD, file.getName());
+            if(cwd_file.exists()){
+                String cwd_id = Utils.sha1(Utils.readContents(cwd_file));
+                String sta_id = Utils.sha1(Utils.readContents(file));
+                if(sta_id.equals(cwd_id)){
+                    continue;
+                }
+                else {
+                    modified.add(file.getName()+" (modified)");
+                }
+            }
+            else {
+                modified.add(file.getName()+" (deleted)");
+            }
+        }
+        String[] tracked_files = cur.getnames();
+        if(tracked_files!=null){
+            for(String tra_name : tracked_files) {
+                File cwd_file = join(CWD, tra_name);
+                if(cwd_file.exists()){
+                    String cwd_id = Utils.sha1(Utils.readContents(cwd_file));
+                    if(cwd_id.equals(cur.getID(tra_name))){
+                        continue;
+                    }
+                    else {
+                        modified.add(tra_name+" (modified)");
+                    }
+                }
+                else {
+                    File if_removal = join(REMOVAL_DIR, tra_name);
+                    if(if_removal.exists()){
+                        continue;
+                    }
+                    else {
+                        modified.add(tra_name+" (deleted)");
+                    }
+                }
+            }
+        }
+    }
+    private static void find_untracked(File file,TreeSet<String> untracked, Commit cur, File[] staged_files) {
+        if (file.isDirectory()) {
+            if (file.getName().equals(".gitlet")) {
+                return;
+            }
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    find_untracked(child, untracked, cur, staged_files);
                 }
             }
         }
         else {
-            if(cur.containsFile(file.getName())){
-                if(!(tar.containsFile(file.getName()))){
-                    Utils.delete(file);
-                }
-                else {
-                    tar.delFile(file.getName());
-                }
-            }
-            else {
-                if(!(tar.containsFile(file.getName()))){
-                    System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
-                    return;
-                }
-                else {
-                    tar.delFile(file.getName());
-                }
+            File if_staged = join(STAGING_DIR, file.getName());
+            File is_removed = join(REMOVAL_DIR, file.getName());
+            boolean removed = is_removed.exists();
+            boolean staged = if_staged.exists();
+            boolean inCurrent = cur.containsFile(file.getName());
+            if(!staged && (!inCurrent || removed)) {
+                untracked.add(file.getName());
             }
         }
     }

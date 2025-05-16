@@ -17,6 +17,9 @@ public class HEAD implements Serializable {
     public void print() {
         System.out.println("*" + bname);
         for (String key : heads.keySet()) {
+            if (key.equals(bname)) {
+                continue;
+            }
             System.out.println(key);
         }
         System.out.printf("\n");

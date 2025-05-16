@@ -33,6 +33,9 @@ public class Commit implements Serializable {
     public String getID(String filename) {
         return tracked_files.get(filename);
     }
+    public String[] getnames() {
+        return tracked_files.keySet().toArray(new String[0]);
+    }
 
     public void del(String filename) {
         tracked_files.remove(filename);
