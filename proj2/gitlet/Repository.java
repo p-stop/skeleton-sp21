@@ -105,7 +105,7 @@ public class Repository {
         HEAD heads = Utils.readObject(HEADS,HEAD.class);
         File cur_com_point = join(COMMITS_DIR, heads.cur_commit+".txt");
         Commit cur_com = Utils.readObject(cur_com_point, Commit.class);
-        //track staged files one.txt by one.txt
+        //track staged files wug2.txt by wug2.txt
         process_staging(cur_com);
         //update commit messages
         cur_com.change(message, heads.cur_commit);
@@ -281,8 +281,6 @@ public class Repository {
         String[] split_files = split.getnames();
         boolean cur_change = false;
         boolean given_change = false;
-        boolean cur_del = false;
-        boolean given_del = false;
         for(String split_file : split_files) {
             //judge if only one modified
             if (cur_com.containsFile(split_file)) {
@@ -323,7 +321,10 @@ public class Repository {
                 }
             }
             else if(given_change && cur_change) {
-                process_conflict(split_file,cur_com,given_com,cur_com.getID(split_file).equals(given_com.getID(split_file)));
+                if(cur_com.containsFile(split_file) && given_com.containsFile(split_file)) {
+                    process_conflict(split_file,cur_com,given_com,cur_com.getID(split_file).equals(given_com.getID(split_file)));
+                }
+                process_conflict(split_file,cur_com,given_com,false);
             }
             if(cur_com.containsFile(split_file)) {
                 cur_com.del(split_file);
@@ -331,6 +332,8 @@ public class Repository {
             if(given_com.containsFile(split_file)) {
                 given_com.del(split_file);
             }
+            cur_change = false;
+            given_change = false;
         }
         String[] cur_files = cur_com.getnames();
         for(String cur_file : cur_files) {
@@ -358,7 +361,7 @@ public class Repository {
             }
         }
         process_staging(n_com);
-        n_com.change("Merged development into "+heads.bname,cur_id);
+        n_com.change("Merged "+given_branch+" into "+heads.bname+".",cur_id);
         n_com.setmerge("Merge: "+cur_id.substring(0,7)+" "+giv_id.substring(0,7),giv_id);
         String n_id = Commit.encode_commit(n_com);
         Utils.writeObject(join(COMMITS_DIR,n_id+".txt"),n_com);
@@ -736,8 +739,8 @@ public class Repository {
                 return;
             }
         }
-        Utils.writeContents(cwd_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>\n");
-        Utils.writeContents(sta_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>\n");
+        Utils.writeContents(cwd_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>");
+        Utils.writeContents(sta_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>");
     }
     private static String fulfill_hash(String prefhash) {
         String[] commits = COMMITS_DIR.list();
