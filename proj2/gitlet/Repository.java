@@ -239,10 +239,11 @@ public class Repository {
         File cur_com_id = join(COMMITS_DIR, heads.cur_commit+".txt");
         File given_com_id = join(COMMITS_DIR, heads.heads.get(given_branch)+".txt");
         Commit n_com = Utils.readObject(cur_com_id, Commit.class);
-        Commit split1 = Utils.readObject(find_split(cur_com_id,given_com_id,cur_id,giv_id,given_branch),Commit.class);
-        if(split1 == null){
+        File split1_file = find_split(cur_com_id,given_com_id,cur_id,giv_id,given_branch);
+        if(split1_file == null){
             return;
         }
+        Commit split1 = Utils.readObject(split1_file,Commit.class);
         //think merged node
         Commit cur_com = Utils.readObject(cur_com_id, Commit.class);
         Commit given_com = Utils.readObject(given_com_id, Commit.class);
@@ -253,10 +254,10 @@ public class Repository {
             File cur_com_2 = join(COMMITS_DIR, Commit.encode_commit(cur_com)+".txt");
             Utils.writeObject(cur_com_2,cur_com);
             File split2_file = find_split(cur_com_2,given_com_id,cur_id2,giv_id,given_branch);
-            Commit split2 = Utils.readObject(split2_file, Commit.class);
-            if(split2 == null){
+            if(split2_file == null){
                 return;
             }
+            Commit split2 = Utils.readObject(split2_file, Commit.class);
             int len1 = 0;
             int len2 = 0;
             while(split1.getParent_hash() != null) {
@@ -744,8 +745,8 @@ public class Repository {
                 return;
             }
         }
-        Utils.writeContents(cwd_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>");
-        Utils.writeContents(sta_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>");
+        Utils.writeContents(cwd_file, "<<<<<<< HEAD\n",c_content, "=======\n",g_content,">>>>>>>");
+        Utils.writeContents(sta_file, "<<<<<<< HEAD\n",c_content, "=======\n",g_content,">>>>>>>");
     }
     private static String fulfill_hash(String prefhash) {
         String[] commits = COMMITS_DIR.list();
@@ -799,20 +800,24 @@ public class Repository {
         given_com = Utils.readObject(given_com_id, Commit.class);
         if(lenC>lenG){
             for(int i=0;i<lenC-lenG;i++){
-                cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+                cur_id = cur_com.getParent_hash();
+                cur_com = Utils.readObject(join(COMMITS_DIR,cur_id+".txt"),Commit.class);
             }
         }
         else if(lenG>lenC){
             for(int i=0;i<lenG-lenC;i++){
-                given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+                giv_id = given_com.getParent_hash();
+                given_com = Utils.readObject(join(COMMITS_DIR,giv_id+".txt"),Commit.class);
             }
         }
         //find common node
         boolean error1 = true;
         while(!(cur_com.getParent_hash().equals(given_com.getParent_hash()))) {
             error1 = false;
-            cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
-            given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+            cur_id = cur_com.getParent_hash();
+            giv_id = given_com.getParent_hash();
+            cur_com = Utils.readObject(join(COMMITS_DIR,cur_id+".txt"),Commit.class);
+            given_com = Utils.readObject(join(COMMITS_DIR,giv_id+".txt"),Commit.class);
         }
         if(error1 && cur_id.equals(giv_id)) {
             if(lenC >= lenG) {
