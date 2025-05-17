@@ -40,9 +40,17 @@ public class Main {
                 HEAD heads = Utils.readObject(Repository.HEADS,HEAD.class);
                 String what = args[1];
                 if(what.equals("--")) {
+                    if (args.length != 3) {
+                        System.out.println("Incorrect operands.");
+                        return;
+                    }
                     Repository.checkout_1_2(heads.cur_commit,args[2]);
                 }
                 else if(args.length == 4) {
+                    if (!(args[2].equals("--"))) {
+                        System.out.println("Incorrect operands.");
+                        return;
+                    }
                     Repository.checkout_1_2(args[1], args[3]);
                 }
                 else {
@@ -82,7 +90,7 @@ public class Main {
                 Repository.merge(args[1]);
                 break;
             default:
-                throw new GitletException("No command with that name exists.");
+                System.out.println("No command with that name exists.");
         }
     }
 }

@@ -144,6 +144,16 @@ public class Repository {
             return;
         }
 
+        if(commit_id.length() != 40) {
+            String full_id = fulfill_hash(commit_id);
+            if(full_id != null) {
+                commit_id = full_id;
+            }
+            else {
+                System.out.println("No commit with that id exists.");
+                return;
+            }
+        }
         File target_com = join(COMMITS_DIR, commit_id+".txt");
         if(target_com.exists()){
             Commit cur_com = Utils.readObject(target_com, Commit.class);
@@ -261,6 +271,8 @@ public class Repository {
             lenG++;
             given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
         }
+        cur_com = Utils.readObject(cur_com_id, Commit.class);
+        given_com = Utils.readObject(given_com_id, Commit.class);
         if(lenC>lenG){
             for(int i=0;i<lenC-lenG;i++){
                 cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
@@ -402,7 +414,7 @@ public class Repository {
 
     public static void log() {
         if (!(GITLET_DIR.exists())) {
-            System.out.println("Found no commit with that message.");
+            System.out.println("Not in an initialized Gitlet directory.");
             return;
         }
 
@@ -436,7 +448,7 @@ public class Repository {
 
     public static void status() {
         if (!(GITLET_DIR.exists())) {
-            System.out.println("Found no commit with that message.");
+            System.out.println("Not in an initialized Gitlet directory.");
             return;
         }
         //ready for modified_files
@@ -556,7 +568,10 @@ public class Repository {
         } else {
             String fileName = file.getName();
             boolean inCurrent = cur.containsFile(fileName);
+            boolean instaged = join(STAGING_DIR,fileName).exists();
             boolean inTarget = tar.containsFile(fileName);
+
+            inCurrent |= instaged;
 
             if (inCurrent && !inTarget) {
                 del.add(file);
@@ -567,7 +582,7 @@ public class Repository {
             }
             // If file is in target, remove from tar's list to avoid redundant deletion
             if (inTarget) {
-                if(cur.getID(fileName).equals(tar.getID(fileName))){
+                if(Utils.sha1(Utils.readContents(file)).equals(tar.getID(fileName))){
                     tar.delFile(fileName);
                 }
             }
@@ -739,6 +754,16 @@ public class Repository {
         }
         Utils.writeContents(cwd_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>\n");
         Utils.writeContents(sta_file, "<<<<<<< HEAD \n",c_content, "======= \n",g_content,">>>>>>>\n");
+    }
+    private static String fulfill_hash(String prefhash) {
+        String[] commits = COMMITS_DIR.list();
+        int end = prefhash.length();
+        for(String commit : commits) {
+            if(commit.substring(0,end).equals(prefhash)) {
+                return commit;
+            }
+        }
+        return null;
     }
 
 
