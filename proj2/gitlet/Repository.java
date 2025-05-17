@@ -147,7 +147,7 @@ public class Repository {
         if(commit_id.length() != 40) {
             String full_id = fulfill_hash(commit_id);
             if(full_id != null) {
-                commit_id = full_id;
+                commit_id = full_id.replace(".txt","");
             }
             else {
                 System.out.println("No commit with that id exists.");
@@ -289,7 +289,7 @@ public class Repository {
             cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
             given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
         }
-        if(error1) {
+        if(error1 && !(cur_id.equals(giv_id))) {
             if(lenC >= lenG) {
                 System.out.println("Given branch is an ancestor of the current branch.");
                 return;
@@ -575,15 +575,20 @@ public class Repository {
 
             if (inCurrent && !inTarget) {
                 del.add(file);
-            } else if (!inCurrent && !inTarget) {
-                // File is untracked and would be overwritten
-                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
-                return false;
-            }
-            // If file is in target, remove from tar's list to avoid redundant deletion
-            if (inTarget) {
+            } else if (inCurrent && inTarget) {
                 if(Utils.sha1(Utils.readContents(file)).equals(tar.getID(fileName))){
                     tar.delFile(fileName);
+                }
+            }
+            // If file is in target, remove from tar's list to avoid redundant deletion
+            else if (!inCurrent && inTarget) {
+                if(Utils.sha1(Utils.readContents(file)).equals(tar.getID(fileName))){
+                    tar.delFile(fileName);
+                }
+                else {
+                    // File is untracked and would be overwritten
+                    System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                    return false;
                 }
             }
         }
