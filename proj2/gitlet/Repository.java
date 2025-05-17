@@ -745,8 +745,8 @@ public class Repository {
                 return;
             }
         }
-        Utils.writeContents(cwd_file, "<<<<<<< HEAD\n",c_content, "=======\n",g_content,">>>>>>>");
-        Utils.writeContents(sta_file, "<<<<<<< HEAD\n",c_content, "=======\n",g_content,">>>>>>>");
+        Utils.writeContents(cwd_file, "<<<<<<< HEAD \n",c_content+" ", "======= \n",g_content,">>>>>>>");
+        Utils.writeContents(sta_file, "<<<<<<< HEAD \n",c_content+" ", "======= \n",g_content,">>>>>>>");
     }
     private static String fulfill_hash(String prefhash) {
         String[] commits = COMMITS_DIR.list();
