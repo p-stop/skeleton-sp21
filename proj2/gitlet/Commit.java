@@ -21,7 +21,15 @@ public class Commit implements Serializable {
         timestamp = "Thu Jan 1 00:00:00 1970 +0000";
         tracked_files = new HashMap<>();
         parent_hash = null;
+        parent_hash2 = null;
         merge = "";
+    }
+    public void change(String message,String parent_hash) {
+        timestamp = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z",Locale.US).format(new Date());
+        this.message = message;
+        this.parent_hash = parent_hash;
+        this.merge = "";
+        this.parent_hash2 = null;
     }
 
     public String getMessage() {
@@ -33,6 +41,9 @@ public class Commit implements Serializable {
     public String getParent_hash() {
         return parent_hash;
     }
+    public String getParent_hash2() {
+        return parent_hash2;
+    }
     public String getID(String filename) {
         return tracked_files.get(filename);
     }
@@ -42,12 +53,6 @@ public class Commit implements Serializable {
 
     public void del(String filename) {
         tracked_files.remove(filename);
-    }
-    public void change(String message,String parent_hash) {
-        timestamp = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy Z",Locale.US).format(new Date());
-        this.message = message;
-        this.parent_hash = parent_hash;
-        merge = "";
     }
     public void putFile(String filename, String hash) {
         tracked_files.put(filename,hash);

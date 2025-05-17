@@ -106,27 +106,7 @@ public class Repository {
         File cur_com_point = join(COMMITS_DIR, heads.cur_commit+".txt");
         Commit cur_com = Utils.readObject(cur_com_point, Commit.class);
         //track staged files one.txt by one.txt
-        File[] files = STAGING_DIR.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                //save files in repo
-                String id = Utils.sha1(Utils.readContents(file));
-                cur_com.putFile(file.getName(), id);
-                File source = join(STAGING_DIR, file.getName());
-                File dest = join(REPO_DIR, id+".txt");
-                Utils.writeContents(dest, Utils.readContents(source));
-                //clear staging area
-                Utils.delete(source);
-            }
-        }
-        //process removal area
-        File[] rm_files = REMOVAL_DIR.listFiles();
-        if (rm_files != null) {
-            for (File file : rm_files) {
-                cur_com.del(file.getName());
-                Utils.delete(file);
-            }
-        }
+        process_staging(cur_com);
         //update commit messages
         cur_com.change(message, heads.cur_commit);
         //save commit
@@ -258,49 +238,41 @@ public class Repository {
         String giv_id = heads.heads.get(given_branch);
         File cur_com_id = join(COMMITS_DIR, heads.cur_commit+".txt");
         File given_com_id = join(COMMITS_DIR, heads.heads.get(given_branch)+".txt");
+        Commit n_com = Utils.readObject(cur_com_id, Commit.class);
+        Commit split1 = Utils.readObject(find_split(cur_com_id,given_com_id,cur_id,giv_id,given_branch),Commit.class);
+        if(split1 == null){
+            return;
+        }
+        //think merged node
         Commit cur_com = Utils.readObject(cur_com_id, Commit.class);
         Commit given_com = Utils.readObject(given_com_id, Commit.class);
-        Commit n_com = Utils.readObject(cur_com_id, Commit.class);
-        int lenC=0;
-        int lenG=0;
-        while(cur_com.getParent_hash()!=null){
-            lenC++;
-            cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
-        }
-        while(given_com.getParent_hash()!=null){
-            lenG++;
-            given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
-        }
-        cur_com = Utils.readObject(cur_com_id, Commit.class);
-        given_com = Utils.readObject(given_com_id, Commit.class);
-        if(lenC>lenG){
-            for(int i=0;i<lenC-lenG;i++){
-                cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
-            }
-        }
-        else if(lenG>lenC){
-            for(int i=0;i<lenG-lenC;i++){
-                given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
-            }
-        }
-        boolean error1 = true;
-        while(!(cur_com.getParent_hash().equals(given_com.getParent_hash()))) {
-            error1 = false;
-            cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
-            given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
-        }
-        if(error1 && !(cur_id.equals(giv_id))) {
-            if(lenC >= lenG) {
-                System.out.println("Given branch is an ancestor of the current branch.");
+        if (cur_com.getParent_hash2() != null) {
+            String cur_id2 = cur_com.getParent_hash2() ;
+            cur_com.change("",cur_id2);
+            cur_id2 = Commit.encode_commit(cur_com);
+            File cur_com_2 = join(COMMITS_DIR, Commit.encode_commit(cur_com)+".txt");
+            Utils.writeObject(cur_com_2,cur_com);
+            File split2_file = find_split(cur_com_2,given_com_id,cur_id2,giv_id,given_branch);
+            Commit split2 = Utils.readObject(split2_file, Commit.class);
+            if(split2 == null){
                 return;
             }
-            else {
-                checkout3(given_branch);
-                System.out.println("Current branch fast-forwarded.");
-                return;
+            int len1 = 0;
+            int len2 = 0;
+            while(split1.getParent_hash() != null) {
+                len1++;
+                split1= Utils.readObject(join(COMMITS_DIR,split1.getParent_hash()+".txt"),Commit.class);
+            }
+            while (split2.getParent_hash() != null) {
+                len2++;
+                split2 = Utils.readObject(join(COMMITS_DIR,split2.getParent_hash()+".txt"),Commit.class);
+            }
+            split2 = Utils.readObject(split2_file, Commit.class);
+            if(len1 < len2) {
+                split1 = split2;
             }
         }
-        Commit split = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+        Commit split = split1;
         //fuck error
         if(!find_untracked2(CWD,cur_com,given_com,split)) {
             return;
@@ -314,7 +286,6 @@ public class Repository {
         for(String split_file : split_files) {
             //judge if only one modified
             if (cur_com.containsFile(split_file)) {
-                cur_com.del(split_file);
                 if(cur_com.getID(split_file).equals(split.getID(split_file))){}
                 else {
                     cur_change = true;
@@ -324,7 +295,6 @@ public class Repository {
                 cur_change = true;
             }
             if(given_com.containsFile(split_file)) {
-                given_com.del(split_file);
                 if(given_com.getID(split_file).equals(split.getID(split_file))){}
                 else {
                     given_change = true;
@@ -344,7 +314,7 @@ public class Repository {
                 }
                 else {
                     File cwd_file = join(CWD,split_file);
-                    File rep_file = join(REPO_DIR,given_com.getID(split_file)+".txt");
+                    File rep_file = join(REPO_DIR,cur_com.getID(split_file)+".txt");
                     File rem_file = join(REMOVAL_DIR,split_file);
                     if(cwd_file.exists()){
                         Utils.delete(cwd_file);
@@ -354,6 +324,12 @@ public class Repository {
             }
             else if(given_change && cur_change) {
                 process_conflict(split_file,cur_com,given_com,cur_com.getID(split_file).equals(given_com.getID(split_file)));
+            }
+            if(cur_com.containsFile(split_file)) {
+                cur_com.del(split_file);
+            }
+            if(given_com.containsFile(split_file)) {
+                given_com.del(split_file);
             }
         }
         String[] cur_files = cur_com.getnames();
@@ -381,9 +357,10 @@ public class Repository {
                 process_conflict(given_file,cur_com,given_com,true);
             }
         }
-        n_com.setmerge("Merge: "+cur_id.substring(0,7)+" "+giv_id.substring(0,7),giv_id);
+        process_staging(n_com);
         n_com.change("Merged development into "+heads.bname,cur_id);
-        String n_id = Utils.sha1(n_com);
+        n_com.setmerge("Merge: "+cur_id.substring(0,7)+" "+giv_id.substring(0,7),giv_id);
+        String n_id = Commit.encode_commit(n_com);
         Utils.writeObject(join(COMMITS_DIR,n_id+".txt"),n_com);
         heads.cur_commit = n_id;
         heads.heads.put(heads.bname,n_id);
@@ -726,7 +703,9 @@ public class Repository {
         return true;
     }
     private static void process_conflict(String split_file,Commit cur_com,Commit given_com,boolean stay) {
-        System.out.println("Encountered a merge conflict.");
+        if(!stay) {
+            System.out.println("Encountered a merge conflict.");
+        }
         String c_content;
         String g_content;
         File cwd_file = join(CWD,split_file);
@@ -769,6 +748,76 @@ public class Repository {
             }
         }
         return null;
+    }
+    private static void process_staging(Commit cur_com) {
+        File[] files = STAGING_DIR.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                //save files in repo
+                String id = Utils.sha1(Utils.readContents(file));
+                cur_com.putFile(file.getName(), id);
+                File source = join(STAGING_DIR, file.getName());
+                File dest = join(REPO_DIR, id+".txt");
+                Utils.writeContents(dest, Utils.readContents(source));
+                //clear staging area
+                Utils.delete(source);
+            }
+        }
+        //process removal area
+        File[] rm_files = REMOVAL_DIR.listFiles();
+        if (rm_files != null) {
+            for (File file : rm_files) {
+                cur_com.del(file.getName());
+                Utils.delete(file);
+            }
+        }
+    }
+    private static File find_split(File cur_com_id,File given_com_id,String cur_id,String giv_id,String given_branch) {
+        Commit cur_com = Utils.readObject(cur_com_id, Commit.class);
+        Commit given_com = Utils.readObject(given_com_id, Commit.class);
+        //calcultae length
+        int lenC=0;
+        int lenG=0;
+        while(cur_com.getParent_hash()!=null){
+            lenC++;
+            cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+        }
+        while(given_com.getParent_hash()!=null){
+            lenG++;
+            given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+        }
+        //make same length lists
+        cur_com = Utils.readObject(cur_com_id, Commit.class);
+        given_com = Utils.readObject(given_com_id, Commit.class);
+        if(lenC>lenG){
+            for(int i=0;i<lenC-lenG;i++){
+                cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+            }
+        }
+        else if(lenG>lenC){
+            for(int i=0;i<lenG-lenC;i++){
+                given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+            }
+        }
+        //find common node
+        boolean error1 = true;
+        while(!(cur_com.getParent_hash().equals(given_com.getParent_hash()))) {
+            error1 = false;
+            cur_com = Utils.readObject(join(COMMITS_DIR,cur_com.getParent_hash()+".txt"),Commit.class);
+            given_com = Utils.readObject(join(COMMITS_DIR,given_com.getParent_hash()+".txt"),Commit.class);
+        }
+        if(error1 && cur_id.equals(giv_id)) {
+            if(lenC >= lenG) {
+                System.out.println("Given branch is an ancestor of the current branch.");
+                return null;
+            }
+            else {
+                checkout3(given_branch);
+                System.out.println("Current branch fast-forwarded.");
+                return null;
+            }
+        }
+        return join(COMMITS_DIR,cur_com.getParent_hash()+".txt");
     }
 
 
