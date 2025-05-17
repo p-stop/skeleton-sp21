@@ -324,7 +324,12 @@ public class Repository {
                 if(cur_com.containsFile(split_file) && given_com.containsFile(split_file)) {
                     process_conflict(split_file,cur_com,given_com,cur_com.getID(split_file).equals(given_com.getID(split_file)));
                 }
-                process_conflict(split_file,cur_com,given_com,false);
+                else if(given_com.containsFile(split_file) == cur_com.containsFile(split_file)) {
+                    process_conflict(split_file,cur_com,given_com,true);
+                }
+                else {
+                    process_conflict(split_file,cur_com,given_com,false);
+                }
             }
             if(cur_com.containsFile(split_file)) {
                 cur_com.del(split_file);
@@ -338,11 +343,11 @@ public class Repository {
         String[] cur_files = cur_com.getnames();
         for(String cur_file : cur_files) {
             if(given_com.containsFile(cur_file)) {
-                given_com.del(cur_file);
                 if(cur_com.getID(cur_file).equals(given_com.getID(cur_file))){}
                 else {
                     process_conflict(cur_file,given_com,given_com,false);
                 }
+                given_com.del(cur_file);
             }
             else {
                 process_conflict(cur_file,given_com,given_com,true);
